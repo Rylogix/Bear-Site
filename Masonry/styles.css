@@ -1,0 +1,61 @@
+.masonry-grid {
+    position: relative;
+    width: 100%;
+    margin: 0 auto;
+}
+
+.masonry-item {
+    position: absolute;
+    top: 0;
+    left: 0;
+    transition: transform 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
+    opacity: 0; /* Fade in handled by JS or CSS transition */
+}
+
+.masonry-img-container {
+    position: relative;
+    width: 100%;
+    border-radius: 12px;
+    overflow: hidden;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+    transition: transform 0.3s ease;
+}
+
+.masonry-img-container:hover {
+    transform: scale(1.02);
+    z-index: 10;
+}
+
+.masonry-img-container img {
+    display: block;
+    width: 100%;
+    height: auto;
+}
+
+.masonry-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    padding: 20px 10px 10px 10px;
+    background: linear-gradient(to top, rgba(0,0,0,0.9), transparent);
+    color: white;
+    opacity: 0;
+    transform: translateY(10px);
+    transition: all 0.3s ease;
+    display: flex;
+    justify-content: center;
+}
+
+.masonry-img-container:hover .masonry-overlay {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.masonry-author {
+    font-size: 0.9rem;
+    font-weight: 600;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.8);
+    letter-spacing: 0.5px;
+}

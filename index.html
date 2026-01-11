@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Beardabear Experimental Revamp</title>
+    <link rel="stylesheet" href="TargetCursor/styles.css">
+    <link rel="stylesheet" href="DitherBackground/styles.css">
+    <link rel="stylesheet" href="PillNav/styles.css">
+    <link rel="stylesheet" href="Masonry/styles.css">
+    <link rel="stylesheet" href="ElasticSlider/styles.css">
+    <link rel="stylesheet" href="CurvedLoop/styles.css">
+    <link rel="stylesheet" href="ScrambledText/styles.css">
+    <link rel="stylesheet" href="CardSwap/styles.css">
+    <link rel="stylesheet" href="Lanyard/styles.css">
+    <link rel="stylesheet" href="revamp.css">
+</head>
+<body>
+    <div id="background-container"></div>
+    
+    <!-- Navigation Container -->
+    <div id="pill-nav-container"></div>
+
+    <!-- Home View -->
+    <div id="home-view" class="view-section">
+        <div id="curved-loop-container"></div>
+        <div class="content">
+            <h1>Beardabear.com</h1>
+            <div class="links-container">
+                <a href="https://discord.gg/beardabear" class="cursor-target social-link" target="_blank" aria-label="Discord">
+                    <img src="static/discordIcon.png" alt="Discord">
+                </a>
+                <a href="https://youtube.com/@beardabear" class="cursor-target social-link" target="_blank" aria-label="YouTube">
+                    <img src="static/YoutubeIcon.png" alt="YouTube">
+                </a>
+                <a href="https://rec.net/user/beardabear" class="cursor-target social-link" target="_blank" aria-label="Rec Room">
+                    <img src="static/RecRoomLogo3.png" alt="Rec Room">
+                </a>
+                <a href="https://www.roblox.com/users/659536639/profile" class="cursor-target social-link" target="_blank" aria-label="Roblox">
+                    <img src="static/Roblox.png" alt="Roblox">
+                </a>
+            </div>
+            
+            <div id="scrambled-text-container" class="text-block">
+                Hey, I'm BearDaBear. I love making things and making people laugh. If you find me funny, or like what I do in general, join my discord server. Thats where I announce everything
+            </div>
+        </div>
+    </div>
+
+    <!-- FanArt View -->
+    <div id="fanart-view" class="view-section" style="display: none; opacity: 0;">
+        <div class="fanart-container"> 
+            <h2 style="text-align: center; color: white; margin: 2rem 0; font-weight: 600; font-size: 2rem; text-shadow: 0 0 10px rgba(0, 0, 0, 5);">Fan Art Gallery</h2>
+            <div id="masonry-container"></div>
+        </div>
+    </div>
+
+    <!-- Youtube View -->
+    <div id="youtube-view" class="view-section" style="display: none; opacity: 0; align-items: center; justify-content: center; height: 100vh; overflow: hidden; position: absolute; top: 0; left: 0; width: 100%;">
+         <div style="position: relative; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;">
+            <div id="card-swap-container"></div>
+         </div>
+    </div>
+
+    <!-- Fanart Modal -->
+    <div id="fanart-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 1000; background: rgba(0,0,0,0.8); align-items: center; justify-content: center; opacity: 0; cursor: pointer;">
+        <div id="decay-card-container" style="width: 600px; height: 750px; pointer-events: none; max-width: 90vw; max-height: 90vh; position: relative;"></div>
+    </div>
+
+    <!-- Music Control -->
+    <div id="music-control-container">
+        <div class="track-title">(DELTARUNE - Hip Shop)</div>
+    </div>
+
+    <script src="static/gsap.min.js"></script>
+    <script type="module">
+        import { TargetCursor } from './TargetCursor/script.js';
+        import { DitherBackground } from './DitherBackground/script.js';
+        import { PillNav } from './PillNav/script.js';
+        import { Masonry } from './Masonry/script.js';
+        import { ElasticSlider } from './ElasticSlider/script.js';
+        import { VanillaScrambledText } from './ScrambledText/script.js';
+        import { VanillaCurvedLoop } from './CurvedLoop/script.js';
+        import { VanillaLanyard } from './Lanyard/vanillaScript.js';
+        import { VanillaCardSwap } from './CardSwap/vanillaScript.js';
+        import { getPerformanceTier } from './utils/performance.js';
+        // import gsap from 'https://cdn.skypack.dev/gsap'; // Removed in favor of local static/gsap.min.js
+
+        // Detect Performance Tier
+        const tier = getPerformanceTier();
+        console.log('Performance Tier:', tier);
+
+        // --- Data ---
+        // Sorted by Modification Date (Newest first) as requested
+        const fanartFiles = [
+            "TonMon_6.gif",
+            "TonMon_5.jpg", 
+            "2bonnie2boink.png",
+            "CheezyMcGeezy.png",
+            "pufflemationxd.png",
+            "supamerymaryem.png",
+            "2bonnie2boink_2.png",
+            "TonMon.png",
+            "TonMon_4.png",
+            "gogogorosan.png",
+            "uh oh.png",
+            "vide0_ 6.png",
+            "TonMon_3.png",
+            "DustTheDumbass.png",
+            "vide0_ 5.png",
+            "vide0_ 4.png",
+            "vide0_ 3.jpg",
+            "vide0_ 2.png",
+            "beardapringle.png",
+            "fritz 4.png",
+            "fritz 3.png",
+            "fritz 2.png",
+            "espxn.png",
+            "the.mrtornado.png",
+            "MrMLG.png",
+            "fritz 0.png",
+            "EEF1234 2.png",
+            "mystic.allspark.png",
+            "Fritz.png",
+            "Cheri Catherine.png",
+            "Molly-Mae.png",
+            "EEF1234.png",
+            "boykisser200_4.png",
+            "TonMon_2.jpg",
+            "williwilliam111.png",
+            "gr00vedude.png",
+            "wick_candlestick.png",
+            "s3d30 3.jpg",
+            "bakedwithguts.png",
+            "s3d30 2.jpg",
+            "AngelSpeaksSpanish 2.png",
+            "s3d30.jpg",
+            "AngelSpeaksSpanish.jpg",
+            "zmk12.png",
+            "Dimka.png",
+            "mariigames2.png",
+            "flashkylo2.png",
+            "Theweirdguy69.png",
+            "mariigames.png",
+            "Deth Ender.jpg",
+            "Vide0 2.png",
+            "sludgeprograms.png",
+            "flashkylo.png",
+            "NoProblamo.png",
+            "Anchu Bastian.png",
+            "𝐕𝐢𝐝𝐞ø 3.png",
+            "𝐕𝐢𝐝𝐞ø.png",
+            "Mystic.jpg"
+        ];
+
+        // Helper to extract author from filename
+        const getAuthor = (filename) => {
+            // Remove extension
+            let name = filename.replace(/\.[^/.]+$/, "");
+            return name;
+        };
+
+        const fanartItems = fanartFiles.map(file => ({
+            url: `fanart/${file}`,
+            author: getAuthor(file)
+        }));
+
+        const youtubeVideos = [
+            {
+                title: "I Got Exposed.. Here's The Truth",
+                url: "https://www.youtube.com/watch?v=TuBMGnA6NjI",
+                image: "https://img.youtube.com/vi/TuBMGnA6NjI/maxresdefault.jpg",
+                views: "30K+ Views"
+            },
+            {
+                title: "I BROKE Rec Room's Biggest Event...",
+                url: "https://www.youtube.com/watch?v=mE7sNWDMc9A",
+                image: "https://img.youtube.com/vi/mE7sNWDMc9A/maxresdefault.jpg",
+                views: "21K+ Views"
+            },
+            {
+                title: "I Made Your UGC Ideas In Rec Room...",
+                url: "https://www.youtube.com/watch?v=34gqpaof3f0",
+                image: "https://img.youtube.com/vi/34gqpaof3f0/maxresdefault.jpg",
+                views: "11K+ Views"
+            },
+            {
+                title: "We Broke Rec Room's Roomie...",
+                url: "https://www.youtube.com/watch?v=guV0q3i1ofs",
+                image: "https://img.youtube.com/vi/guV0q3i1ofs/maxresdefault.jpg",
+                views: "31K+ Views"
+            },
+            {
+                title: "Rec Room Said No, So I Did It Anyway",
+                url: "https://www.youtube.com/watch?v=ZuYh-DXAuZs",
+                image: "https://img.youtube.com/vi/ZuYh-DXAuZs/maxresdefault.jpg",
+                views: "24K+ Views"
+            },
+            {
+                title: "I Got Early Access To A Secret Feature...",
+                url: "https://www.youtube.com/watch?v=v1DjoRZYztI",
+                image: "https://img.youtube.com/vi/v1DjoRZYztI/maxresdefault.jpg",
+                views: "79K+ Views"
+            },
+            {
+                title: "ADMIN Trolling In Rec Room",
+                url: "https://www.youtube.com/watch?v=h5_LOubvmhM",
+                image: "https://img.youtube.com/vi/h5_LOubvmhM/maxresdefault.jpg",
+                views: "150K+ Views"
+            },
+            {
+                title: "I BROKE Rec Room’s New Bean Bodies…",
+                url: "https://www.youtube.com/watch?v=Ca-iDExgdHA",
+                image: "https://img.youtube.com/vi/Ca-iDExgdHA/maxresdefault.jpg",
+                views: "41K+ Views"
+            },
+            {
+                title: "I Shouldn't Have Gotten This...",
+                url: "https://www.youtube.com/watch?v=TFfYp3IeCNY",
+                image: "https://img.youtube.com/vi/TFfYp3IeCNY/maxresdefault.jpg",
+                views: "23K+ Views"
+            },
+            {
+                title: "Rec Room's Creepiest Account Is Back",
+                url: "https://www.youtube.com/watch?v=WjEAlE-9MzY",
+                image: "https://img.youtube.com/vi/WjEAlE-9MzY/maxresdefault.jpg",
+                views: "89K+ Views"
+            },
+            {
+                title: "Rec Room Didn't Want Me To Do This...",
+                url: "https://www.youtube.com/watch?v=QekHnl8unoY",
+                image: "https://img.youtube.com/vi/QekHnl8unoY/maxresdefault.jpg",
+                views: "179K+ Views"
+            },
+            {
+                title: "The FULL Story Of Rec Room's Creepiest Account...",
+                url: "https://www.youtube.com/watch?v=lK1H3p6OWGE",
+                image: "https://img.youtube.com/vi/lK1H3p6OWGE/maxresdefault.jpg",
+                views: "268K+ Views"
+            },
+            {
+                title: "I BROKE Rec Room My Little Monsters...",
+                url: "https://www.youtube.com/watch?v=3ijAKmZskVo",
+                image: "https://img.youtube.com/vi/3ijAKmZskVo/maxresdefault.jpg",
+                views: "62K+ Views"
+            },
+            {
+                title: "I HACKED THE MAKER PEN",
+                url: "https://www.youtube.com/watch?v=VDhxAZgpD_g",
+                image: "https://img.youtube.com/vi/VDhxAZgpD_g/maxresdefault.jpg",
+                views: "55K+ Views"
+            },
+            {
+                title: "IT HAPPENED...",
+                url: "https://www.youtube.com/watch?v=5vx6g7B5dsM",
+                image: "https://img.youtube.com/vi/5vx6g7B5dsM/maxresdefault.jpg",
+                views: "24K+ Views"
+            },
+            {
+                title: "My Account Breaks Rec Room...",
+                url: "https://www.youtube.com/watch?v=TEkU72j2H3A",
+                image: "https://img.youtube.com/vi/TEkU72j2H3A/maxresdefault.jpg",
+                views: "52K+ Views"
+            },
+            {
+                title: "10 Ways To Break Rec Room",
+                url: "https://www.youtube.com/watch?v=eWnhxAM5QSw",
+                image: "https://img.youtube.com/vi/eWnhxAM5QSw/maxresdefault.jpg",
+                views: "96K+ Views"
+            },
+            {
+                title: "I Broke Rec Room Full Bodies...",
+                url: "https://www.youtube.com/watch?v=ZsHu9eICqPU",
+                image: "https://img.youtube.com/vi/ZsHu9eICqPU/maxresdefault.jpg",
+                views: "344K+ Views"
+            },
+            {
+                title: "I Got Admin In Rec Room 2",
+                url: "https://www.youtube.com/watch?v=MmIV0f8u9I8",
+                image: "https://img.youtube.com/vi/MmIV0f8u9I8/maxresdefault.jpg",
+                views: "196K+ Views"
+            },
+            {
+                title: "We Played The WORST Rooms...",
+                url: "https://www.youtube.com/watch?v=eWAQi0eIjAY",
+                image: "https://img.youtube.com/vi/eWAQi0eIjAY/maxresdefault.jpg",
+                views: "133K+ Views"
+            },
+            {
+                title: "I Got Admin In Rec Room...",
+                url: "https://www.youtube.com/watch?v=rbUPP4qV-vk",
+                image: "https://img.youtube.com/vi/rbUPP4qV-vk/maxresdefault.jpg",
+                views: "399K+ Views"
+            },
+            {
+                title: "I Broke Rec Room Again...",
+                url: "https://www.youtube.com/watch?v=TU7K5sdj1to",
+                image: "https://img.youtube.com/vi/TU7K5sdj1to/maxresdefault.jpg",
+                views: "293K+ Views"
+            },
+            {
+                title: "I Think I Broke Rec Room...",
+                url: "https://www.youtube.com/watch?v=pmL6hJAchXo",
+                image: "https://img.youtube.com/vi/pmL6hJAchXo/maxresdefault.jpg",
+                views: "248K+ Views"
+            },
+            {
+                title: "DOORS In Rec Room",
+                url: "https://www.youtube.com/watch?v=pXflA9MgTEI",
+                image: "https://img.youtube.com/vi/pXflA9MgTEI/maxresdefault.jpg",
+                views: "53K+ Views"
+            },
+            {
+                title: "Controlling 100 Rec Room Clones",
+                url: "https://www.youtube.com/watch?v=KEj0r_8iNRc",
+                image: "https://img.youtube.com/vi/KEj0r_8iNRc/maxresdefault.jpg",
+                views: "37K+ Views"
+            },
+            {
+                title: "I Met The Creepiest Account On Rec Room",
+                url: "https://www.youtube.com/watch?v=_L1LhBuryLE",
+                image: "https://img.youtube.com/vi/_L1LhBuryLE/maxresdefault.jpg",
+                views: "133K+ Views"
+            },
+            {
+                title: "BANNED",
+                url: "https://www.youtube.com/watch?v=MRwU1hRdqT0",
+                image: "https://img.youtube.com/vi/MRwU1hRdqT0/maxresdefault.jpg",
+                views: "89K+ Views"
+            },
+            {
+                title: "DOORS In Rec Room Trailer",
+                url: "https://www.youtube.com/watch?v=AninSPzcGNA",
+                image: "https://img.youtube.com/vi/AninSPzcGNA/maxresdefault.jpg",
+                views: "144K+ Views"
+            },
+            {
+                title: "silly billy 3",
+                url: "https://www.youtube.com/watch?v=wca4cDoMsy8",
+                image: "https://img.youtube.com/vi/wca4cDoMsy8/maxresdefault.jpg",
+                views: "37K+ Views"
+            },
+            {
+                title: "merch",
+                url: "https://www.youtube.com/watch?v=7CGh1nMlReg",
+                image: "https://img.youtube.com/vi/7CGh1nMlReg/maxresdefault.jpg",
+                views: "20K+ Views"
+            },
+            {
+                title: "oculus quest 2",
+                url: "https://www.youtube.com/watch?v=47f3cn670nY",
+                image: "https://img.youtube.com/vi/47f3cn670nY/maxresdefault.jpg",
+                views: "23K+ Views"
+            },
+            {
+                title: "Rec Room's Mysterious Side",
+                url: "https://www.youtube.com/watch?v=F1_gRygPFxY",
+                image: "https://img.youtube.com/vi/F1_gRygPFxY/maxresdefault.jpg",
+                views: "18K+ Views"
+            },
+            {
+                title: "Rec Room Invasion PowerCore Locations + Portal Gun",
+                url: "https://www.youtube.com/watch?v=R7TutlnQXf8",
+                image: "https://img.youtube.com/vi/R7TutlnQXf8/maxresdefault.jpg",
+                views: "13K+ Views"
+            },
+            {
+                title: "Rec Room's Creepiest Account Added Me",
+                url: "https://www.youtube.com/watch?v=80vJp6wzG8c",
+                image: "https://img.youtube.com/vi/80vJp6wzG8c/maxresdefault.jpg",
+                views: "148K+ Views"
+            },
+            {
+                title: "The Creepiest Account On Rec Room",
+                url: "https://www.youtube.com/watch?v=qgOqjYajjSA",
+                image: "https://img.youtube.com/vi/qgOqjYajjSA/maxresdefault.jpg",
+                views: "192K+ Views"
+            }
+        ];
+
+        // --- Initialization ---
+
+        // 1. Background
+        const bgContainer = document.getElementById('background-container');
+        new DitherBackground(bgContainer, {
+            waveColor: [0.9, 0.6, 0.2],
+            waveSpeed: 0.05,
+            waveAmplitude: 0.46,
+            waveFrequency: 5.6,
+            colorNum: 4.5,
+            pixelSize: 3,
+            mouseRadius: 0.36,
+            mouseStrength: 0.8,
+            quality: tier
+        });
+
+        // 2. Custom Cursor
+        new TargetCursor({
+            spinDuration: 4,
+            hoverDuration: 0.2,
+            targetSelector: '.cursor-target, .pill, .masonry-img-container, .slider-root, .card',
+            quality: tier
+        });
+
+        // 3. Navigation & Views
+        const homeView = document.getElementById('home-view');
+        const fanartView = document.getElementById('fanart-view');
+        const youtubeView = document.getElementById('youtube-view');
+        let isMasonryInitialized = false;
+        let isCardSwapInitialized = false;
+
+        const handleTabChange = (id) => {
+            let targetView;
+            if (id === 'home') targetView = homeView;
+            else if (id === 'fanart') targetView = fanartView;
+            else if (id === 'youtube') targetView = youtubeView;
+
+            // Hide others
+            [homeView, fanartView, youtubeView].forEach(view => {
+                if (view !== targetView) {
+                     if (view.style.display !== 'none' && getComputedStyle(view).display !== 'none') {
+                        gsap.to(view, { 
+                            opacity: 0, 
+                            duration: 0.3, 
+                            onComplete: () => {
+                                view.style.display = 'none';
+                            }
+                        });
+                     } else {
+                         view.style.display = 'none';
+                     }
+                }
+            });
+
+            // Show target
+            const isVisible = getComputedStyle(targetView).display !== 'none' && getComputedStyle(targetView).opacity !== '0';
+            
+            if (isVisible) {
+                gsap.to(targetView, { opacity: 1, duration: 0.3 });
+                 if (id === 'home') {
+                    window.scrollTo(0, 0);
+                    document.body.classList.remove('scrolled');
+                 }
+            } else {
+                setTimeout(() => {
+                    targetView.style.opacity = 0;
+                    if (id === 'home') {
+                        targetView.style.display = 'flex';
+                        window.scrollTo(0, 0);
+                        document.body.classList.remove('scrolled');
+                    } else if (id === 'youtube') {
+                        targetView.style.display = 'flex';
+                    } else {
+                        targetView.style.display = 'block';
+                    }
+
+                    gsap.to(targetView, { opacity: 1, duration: 0.3 });
+
+                    if (id === 'fanart' && !isMasonryInitialized) {
+                        const masonryContainer = document.getElementById('masonry-container');
+                        new Masonry(masonryContainer, { items: fanartItems });
+                        isMasonryInitialized = true;
+                    }
+                    if (id === 'youtube' && !isCardSwapInitialized) {
+                        const swapContainer = document.getElementById('card-swap-container');
+                        new VanillaCardSwap(swapContainer, { 
+                            items: youtubeVideos,
+                            width: 640,
+                            height: 360,
+                            cardDistance: 50,
+                            verticalDistance: 30,
+                            skewAmount: 4,
+                            delay: 1000,
+                            pauseOnHover: false,
+                            quality: tier
+                        });
+                        isCardSwapInitialized = true;
+                    }
+                }, 300);
+            }
+        };
+
+        const navContainer = document.getElementById('pill-nav-container');
+        new PillNav(navContainer, {
+            items: [
+                { id: 'home', label: 'Home' },
+                { id: 'fanart', label: 'Fan Art' },
+                { id: 'youtube', label: 'Youtube' }
+            ],
+            activeId: 'home',
+            onTabChange: handleTabChange
+        });
+
+        // 3.5 Scrambled Text & Curved Loop
+        const scrambledTextContainer = document.getElementById('scrambled-text-container');
+        new VanillaScrambledText(scrambledTextContainer, {
+            chars: '!<>-_\\/[]{}—=+*^?#________'
+        });
+
+        const curvedLoopContainer = document.getElementById('curved-loop-container');
+        new VanillaCurvedLoop(curvedLoopContainer, {
+            texts: ["WELCOME ✦", "BEARDABEAR ✦", "ENJOY ✦",  "CATBUG! ✦", "I PAID 10$ FOR THIS ✦", "HAVE FUN ✦", "I PAID 10$ FOR THIS ✦", "MYSTERIOUS TEXT ✦"],
+            curveAmount: 500,
+            intervalTime: 2500
+        });
+
+        // 3.6 Fanart Modal Logic
+        const modal = document.getElementById('fanart-modal');
+        const decayContainer = document.getElementById('decay-card-container');
+        let currentLanyard = null;
+
+        const openModal = (imgUrl, authorName) => {
+            modal.style.display = 'flex';
+            gsap.to(modal, { opacity: 1, duration: 0.3 });
+            
+            // Clean up old
+            if (currentLanyard) {
+                currentLanyard.destroy();
+                currentLanyard = null;
+            }
+
+            // Pre-load image to get natural aspect ratio
+            const tempImg = new Image();
+            tempImg.src = imgUrl;
+            tempImg.onload = () => {
+                const aspectRatio = tempImg.width / tempImg.height;
+                
+                // For Lanyard, we want the container to be full screen or large enough
+                decayContainer.style.width = '100%';
+                decayContainer.style.height = '100%';
+                decayContainer.style.pointerEvents = 'auto'; // Enable interactions
+
+                // Initialize Lanyard
+                currentLanyard = new VanillaLanyard(decayContainer, {
+                    image: imgUrl,
+                    aspectRatio: aspectRatio,
+                    text: authorName, // Lanyard might not display text yet, but good to pass
+                    quality: tier
+                });
+            };
+        };
+
+        const closeModal = () => {
+            gsap.to(modal, { 
+                opacity: 0, 
+                duration: 0.3, 
+                onComplete: () => {
+                    modal.style.display = 'none';
+                    if (currentLanyard) {
+                        currentLanyard.destroy();
+                        currentLanyard = null;
+                    }
+                } 
+            });
+        };
+
+        // Modal interactions
+        modal.addEventListener('click', (e) => {
+            // Check if we clicked on the modal overlay or the decay container (but not the image/card itself)
+            // The canvas catches interactions for the card.
+            // If the user clicks the "background" area of the canvas or the modal overlay, close it.
+            
+            // e.target === modal : Clicked black overlay
+            // e.target.tagName === 'CANVAS' : Clicked the 3D scene
+            
+            // To distinguish between clicking "on the card" vs "on the empty space" in Canvas is tricky without raycasting from here.
+            // HOWEVER, the VanillaLanyard class binds events.
+            // We can check if the VanillaLanyard reports a hover or drag.
+            
+            // Easier approach: The Lanyard canvas fills the screen. 
+            // If the user clicks and WAS NOT hovering the card, it's a close.
+            
+            if (e.target === modal) {
+                closeModal();
+            } else if (e.target.tagName === 'CANVAS' && currentLanyard) {
+                // Check if card is currently hovered in the 3D instance
+                if (!currentLanyard.hovered && !currentLanyard.isDragging) {
+                    closeModal();
+                }
+            }
+        });
+
+        // Delegate clicks on masonry items
+        document.getElementById('masonry-container').addEventListener('click', (e) => {
+            const item = e.target.closest('.masonry-img-container');
+            if (item) {
+                const img = item.querySelector('img');
+                const author = item.querySelector('.masonry-author');
+                if (img) {
+                    openModal(img.src, author ? author.textContent : '');
+                }
+            }
+        });
+
+        // 4. Music Logic
+        const musicContainer = document.getElementById('music-control-container');
+        const bgMusic = new Audio('static/DELTARUNE - HIP SHOP.ogg');
+        bgMusic.loop = true;
+        bgMusic.volume = 0.5; // Default volume (50/100)
+
+        // Initialize ElasticSlider for volume
+        new ElasticSlider(musicContainer, {
+            defaultValue: 50,
+            minValue: 0,
+            maxValue: 100,
+            leftIcon: '🔈', // Volume down icon char
+            rightIcon: '🔊', // Volume up icon char
+            onChange: (value) => {
+                // Update audio volume
+                const newVolume = value / 100;
+                bgMusic.volume = Math.max(0, Math.min(1, newVolume));
+                
+                // If user interacts with slider, ensure music is playing (in case it was blocked or paused)
+                if (bgMusic.paused && newVolume > 0) {
+                    bgMusic.play().catch(e => console.log('Autoplay prevented:', e));
+                }
+            }
+        });
+
+        // Try to autoplay on load (usually blocked)
+        bgMusic.play().catch(() => {
+            // If blocked, add one-time listener to start on interaction
+            const startMusic = () => {
+                bgMusic.play();
+                document.removeEventListener('click', startMusic);
+                document.removeEventListener('keydown', startMusic);
+            };
+            document.addEventListener('click', startMusic);
+            document.addEventListener('keydown', startMusic);
+        });
+
+
+        // Scroll listener for top shadow
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 50) {
+                document.body.classList.add('scrolled');
+            } else {
+                document.body.classList.remove('scrolled');
+            }
+        });
+
+    </script>
+</body>
+</html>

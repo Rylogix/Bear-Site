@@ -1,0 +1,32 @@
+.content {
+  position: relative;
+}
+
+.svg {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: block;
+  will-change: transform;
+}
+
+.card-text {
+  position: absolute;
+  top: -60px; /* Move above the card */
+  left: 0;
+  width: 100%;
+  text-align: center;
+  letter-spacing: -0.5px;
+  font-weight: 900;
+  font-size: 3rem; /* Larger font */
+  line-height: 1.2em;
+  color: white;
+  text-shadow: 0 0 10px rgba(0, 0, 0, 0.8);
+  pointer-events: none;
+  z-index: 10;
+}
+
+/* Remove first-line special styling as we want uniform large title */
+/* .card-text::first-line {
+  font-size: 4rem;
+} */
