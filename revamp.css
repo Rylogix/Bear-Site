@@ -366,7 +366,7 @@ body::after {
     align-items: center;
     justify-content: center;
     padding: clamp(12px, 3vw, 24px) 0;
-    transform: translateY(-20px);
+    transform: translateY(-20px) scale(0.92);
 }
  
 #card-swap-container {
@@ -455,7 +455,7 @@ body::after {
    font-weight: 700;
    text-transform: uppercase;
    line-height: 1;
-   transform: translateY(clamp(24px, 8vh, 120px));
+  transform: translateY(calc(clamp(24px, 8vh, 120px) - 100px));
   text-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
   filter: drop-shadow(0 0 10px rgba(0, 0, 0, 0.5));
   max-width: min(1200px, 100%);
