@@ -55,6 +55,7 @@ export class Masonry {
             
             const imgContainer = document.createElement('div');
             imgContainer.className = 'masonry-img-container';
+            imgContainer.classList.add('is-loading');
             
             const img = document.createElement('img');
             img.decoding = 'async';
@@ -71,6 +72,7 @@ export class Masonry {
                     this.observer.observe(img);
                 } else {
                     img.src = item.url;
+                    img.removeAttribute('data-src');
                 }
             }
             img.alt = item.author || 'Fanart';
@@ -94,12 +96,22 @@ export class Masonry {
             item.element = itemWrapper;
             
             // Image load handler to trigger relayout
-            img.onload = () => {
+            const handleLoad = () => {
+                if (img.dataset.src) {
+                    return;
+                }
                 if (img.naturalWidth && img.naturalHeight) {
                     img.dataset.ratio = (img.naturalHeight / img.naturalWidth).toFixed(4);
                 }
+                imgContainer.classList.remove('is-loading');
+                imgContainer.classList.add('is-loaded');
                 this.scheduleLayout();
             };
+
+            img.addEventListener('load', handleLoad);
+            if (img.complete && !img.dataset.src) {
+                handleLoad();
+            }
         });
 
         // Initial layout attempt
@@ -117,8 +129,14 @@ export class Masonry {
     layout() {
         const colCount = this.getColumns();
         const containerWidth = this.container.clientWidth;
+        if (!containerWidth) {
+            return;
+        }
         const gap = Math.max(12, Math.min(this.gap, Math.round(containerWidth * 0.04)));
         const colWidth = (containerWidth - (colCount - 1) * gap) / colCount;
+        if (!isFinite(colWidth) || colWidth <= 0) {
+            return;
+        }
         
         const colHeights = new Array(colCount).fill(0);
         
@@ -143,6 +161,7 @@ export class Masonry {
             const y = colHeights[minColIndex];
             
             item.element.style.width = `${colWidth}px`;
+            item.element.style.height = `${itemHeight}px`;
             item.element.style.transform = `translate(${x}px, ${y}px)`;
             item.element.style.opacity = 1;
             

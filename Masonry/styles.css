@@ -15,11 +15,33 @@
 .masonry-img-container {
     position: relative;
     width: 100%;
+    height: 100%;
     border-radius: 12px;
     overflow: hidden;
     cursor: pointer;
     box-shadow: 0 4px 15px rgba(0,0,0,0.3);
     transition: transform 0.3s ease;
+}
+
+.masonry-img-container.is-loading {
+    outline: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.4);
+}
+
+.masonry-img-container.is-loading::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 22px;
+    height: 22px;
+    margin: -11px 0 0 -11px;
+    border-radius: 50%;
+    border: 2px solid rgba(255, 255, 255, 0.25);
+    border-top-color: #fff;
+    animation: spin 0.9s linear infinite;
+    pointer-events: none;
+    z-index: 2;
 }
 
 .masonry-img-container:hover {
@@ -30,7 +52,8 @@
 .masonry-img-container img {
     display: block;
     width: 100%;
-    height: auto;
+    height: 100%;
+    object-fit: cover;
 }
 
 .masonry-overlay {

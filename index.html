@@ -93,6 +93,8 @@
         // Detect Performance Tier
         const tier = getPerformanceTier();
         console.log('Performance Tier:', tier);
+        const isPhoneDevice = /Android.*Mobile|iPhone|iPod|IEMobile|BlackBerry|Opera Mini/i.test(navigator.userAgent);
+        document.body.classList.toggle('is-phone', isPhoneDevice);
 
         let MasonryModule = null;
         let CardSwapModule = null;
@@ -636,6 +638,11 @@
 
         // 4. Music Logic
         const musicContainer = document.getElementById('music-control-container');
+        if (isPhoneDevice) {
+            if (musicContainer) {
+                musicContainer.remove();
+            }
+        } else {
         const bgMusic = new Audio('static/DELTARUNE - HIP SHOP.ogg');
         bgMusic.loop = true;
         bgMusic.volume = 0.2; // Default volume (20/100)
@@ -690,6 +697,7 @@
         document.addEventListener('click', startMusic);
         document.addEventListener('keydown', startMusic);
         document.addEventListener('touchstart', startMusic, { passive: true });
+        }
 
 
         // Scroll listener for top shadow

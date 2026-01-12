@@ -438,6 +438,23 @@ body::after {
         width: min(360px, 100%);
     }
 }
+
+body.is-phone .links-container {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-auto-flow: row;
+    width: min(320px, 88vw);
+    column-gap: clamp(8px, 4vw, 16px);
+    row-gap: clamp(12px, 5vw, 20px);
+}
+
+body.is-phone #curved-loop-container {
+    padding-top: clamp(4px, 4vh, 32px);
+}
+
+body.is-phone .curved-loop-svg {
+    --loop-font-size: clamp(72px, 20vw, 160px);
+    transform: translateY(clamp(8px, 6vh, 40px));
+}
  
 .responsive-debug {
      position: fixed;

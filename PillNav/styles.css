@@ -270,3 +270,25 @@
   visibility: visible;
   transform: scale(1);
 }
+
+body.is-phone .pill-nav-container {
+  left: 0;
+  transform: none;
+  justify-content: flex-start;
+  width: auto;
+  padding-left: calc(var(--page-pad, 16px) + env(safe-area-inset-left));
+  padding-right: 0;
+  top: calc(env(safe-area-inset-top) + 2px);
+}
+
+body.is-phone .pill-nav {
+  width: max-content;
+}
+
+body.is-phone .desktop-only {
+  display: block !important;
+}
+
+body.is-phone .mobile-only {
+  display: none !important;
+}
