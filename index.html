@@ -69,6 +69,10 @@
     <!-- Fanart Modal -->
     <div id="fanart-modal" role="dialog" aria-modal="true" aria-hidden="true">
         <div id="decay-card-container"></div>
+        <div id="lanyard-loading" class="lanyard-loading" aria-live="polite" aria-hidden="true">
+            <div class="lanyard-loading-text">Loading 3d Viewport</div>
+            <div class="lanyard-loading-spinner"></div>
+        </div>
     </div>
 
     <!-- Music Control -->
@@ -545,13 +549,20 @@
         // 3.6 Fanart Modal Logic
         const modal = document.getElementById('fanart-modal');
         const decayContainer = document.getElementById('decay-card-container');
+        const lanyardLoading = document.getElementById('lanyard-loading');
         let currentLanyard = null;
+        const setLanyardLoading = (isLoading) => {
+            if (!lanyardLoading) return;
+            lanyardLoading.classList.toggle('is-active', isLoading);
+            lanyardLoading.setAttribute('aria-hidden', isLoading ? 'false' : 'true');
+        };
 
         const openModal = (imgUrl, authorName) => {
             modal.style.display = 'flex';
             document.body.classList.add('modal-open');
             modal.setAttribute('aria-hidden', 'false');
             gsap.to(modal, { opacity: 1, duration: 0.3 });
+            setLanyardLoading(true);
             
             // Clean up old
             if (currentLanyard) {
@@ -576,7 +587,8 @@
                         image: imgUrl,
                         aspectRatio: aspectRatio,
                         text: authorName, // Lanyard might not display text yet, but good to pass
-                        quality: tier
+                        quality: tier,
+                        onReady: () => setLanyardLoading(false)
                     });
                 });
             };
@@ -590,6 +602,7 @@
                     modal.style.display = 'none';
                     document.body.classList.remove('modal-open');
                     modal.setAttribute('aria-hidden', 'true');
+                    setLanyardLoading(false);
                     if (currentLanyard) {
                         currentLanyard.destroy();
                         currentLanyard = null;

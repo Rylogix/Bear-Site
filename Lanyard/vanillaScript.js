@@ -8,6 +8,7 @@ export class VanillaLanyard {
         this.aspectRatio = options.aspectRatio || 1; // Width / Height
         this.width = options.width || 600; // Display width reference
         this.quality = options.quality || 'high';
+        this.onReady = options.onReady || null;
         
         this.init();
         this.createPhysics();
@@ -190,7 +191,11 @@ export class VanillaLanyard {
         // 3. The Card
         // Texture
         const textureLoader = new THREE.TextureLoader();
-        const cardTexture = textureLoader.load(this.imageUrl);
+        const cardTexture = textureLoader.load(this.imageUrl, () => {
+            if (typeof this.onReady === 'function') {
+                this.onReady();
+            }
+        });
         cardTexture.encoding = THREE.sRGBEncoding;
         
         // Geometry
@@ -531,4 +536,3 @@ export class VanillaLanyard {
         this.container.innerHTML = '';
     }
 }
-
