@@ -452,7 +452,7 @@ body.is-phone #curved-loop-container {
 }
 
 body.is-phone .curved-loop-svg {
-    --loop-font-size: clamp(96px, 26vw, 200px);
+    --loop-font-size: clamp(192px, 52vw, 400px);
     transform: translateY(clamp(8px, 6vh, 40px));
 }
  
