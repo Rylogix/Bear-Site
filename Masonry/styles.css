@@ -53,6 +53,11 @@
     z-index: 2;
 }
 
+.masonry-img-container.is-loading .masonry-overlay {
+    opacity: 0;
+    transform: translateY(10px);
+}
+
 .masonry-img-container:hover {
     transform: scale(1.02);
     z-index: 10;
