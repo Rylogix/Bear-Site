@@ -20,11 +20,12 @@ export class Masonry {
     }
 
     getColumns() {
-        const width = window.innerWidth;
-        if (width > 1500) return 5;
-        if (width > 1000) return 4;
-        if (width > 600) return 3;
-        if (width > 400) return 2;
+        const width = this.container.clientWidth || window.innerWidth;
+        if (width >= 1920) return 6;
+        if (width >= 1440) return 5;
+        if (width >= 1024) return 4;
+        if (width >= 768) return 3;
+        if (width >= 480) return 2;
         return 1;
     }
 
@@ -73,7 +74,8 @@ export class Masonry {
     layout() {
         const colCount = this.getColumns();
         const containerWidth = this.container.clientWidth;
-        const colWidth = (containerWidth - (colCount - 1) * this.gap) / colCount;
+        const gap = Math.max(12, Math.min(this.gap, Math.round(containerWidth * 0.04)));
+        const colWidth = (containerWidth - (colCount - 1) * gap) / colCount;
         
         const colHeights = new Array(colCount).fill(0);
         
@@ -91,14 +93,14 @@ export class Masonry {
             // Find shortest column
             const minColIndex = colHeights.indexOf(Math.min(...colHeights));
             
-            const x = minColIndex * (colWidth + this.gap);
+            const x = minColIndex * (colWidth + gap);
             const y = colHeights[minColIndex];
             
             item.element.style.width = `${colWidth}px`;
             item.element.style.transform = `translate(${x}px, ${y}px)`;
             item.element.style.opacity = 1;
             
-            colHeights[minColIndex] += itemHeight + this.gap;
+            colHeights[minColIndex] += itemHeight + gap;
         });
         
         this.container.style.height = `${Math.max(...colHeights)}px`;

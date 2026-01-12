@@ -1,26 +1,25 @@
 .pill-nav-container {
-  position: fixed; /* Fixed so it stays at top */
-  top: 3rem; /* Lowered a bit (was 2rem) */
+  position: fixed;
+  top: calc(var(--nav-top, 12px) + env(safe-area-inset-top));
   left: 50%;
   transform: translateX(-50%);
   z-index: 99;
   display: flex;
   justify-content: center;
+  width: 100%;
+  padding: 0 calc(var(--page-pad, 16px) + env(safe-area-inset-left));
+  padding-right: calc(var(--page-pad, 16px) + env(safe-area-inset-right));
+  pointer-events: none;
 }
 
-@media (max-width: 768px) {
-  .pill-nav-container {
-    width: 100%;
-    left: 0;
-    transform: none;
-    top: 1rem;
-  }
+.pill-nav-container > * {
+  pointer-events: auto;
 }
 
 .pill-nav {
-  --nav-h: 56px; /* Increased from 42px */
-  --logo: 48px;  /* Increased from 36px */
-  --pill-pad-x: 24px; /* Increased padding */
+  --nav-h: var(--nav-height, 56px);
+  --logo: calc(var(--nav-height, 56px) - 8px);
+  --pill-pad-x: clamp(14px, 2vw, 24px);
   --pill-gap: 4px;
   /* Colors */
   --base: #000;
@@ -38,7 +37,7 @@
   .pill-nav {
     width: 100%;
     justify-content: space-between;
-    padding: 0 1rem;
+    padding: 0;
     background: transparent;
   }
 }
@@ -101,8 +100,8 @@
   border-radius: 9999px;
   box-sizing: border-box;
   font-weight: 600;
-  font-size: 18px; /* Increased font size */
-  line-height: 0;
+  font-size: clamp(0.9rem, 1.8vw, 1.1rem);
+  line-height: 1;
   text-transform: uppercase;
   letter-spacing: 0.5px;
   white-space: nowrap;
@@ -221,16 +220,19 @@
 
 .mobile-menu-popover {
   position: absolute;
-  top: 3em;
-  left: 1rem;
-  right: 1rem;
+  top: calc(var(--nav-h) + 0.5rem);
+  left: 0;
+  right: 0;
   background: var(--base);
   border-radius: 27px;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
   z-index: 998;
   opacity: 0;
+  transform: scale(0.98);
   transform-origin: top center;
   visibility: hidden;
+  max-height: calc(100dvh - var(--nav-h) - 3rem);
+  overflow-y: auto;
 }
 
 .mobile-menu-list {
@@ -252,10 +254,19 @@
   font-weight: 500;
   border-radius: 50px;
   transition: all 0.2s ease;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
 }
 
 .mobile-menu-popover .mobile-menu-link:hover {
   cursor: pointer;
   background-color: rgba(255,255,255,0.1);
   color: #fff;
+}
+
+.mobile-menu-popover.is-open {
+  opacity: 1;
+  visibility: visible;
+  transform: scale(1);
 }

@@ -37,7 +37,7 @@ export class PillNav {
     
     // Items container
     const itemsContainer = document.createElement('div');
-    itemsContainer.className = 'pill-nav-items';
+    itemsContainer.className = 'pill-nav-items desktop-only';
     
     const ul = document.createElement('ul');
     ul.className = 'pill-list';
@@ -75,8 +75,48 @@ export class PillNav {
     
     itemsContainer.appendChild(ul);
     this.navElement.appendChild(itemsContainer);
+
+    // Mobile menu button
+    const mobileButton = document.createElement('button');
+    mobileButton.className = 'mobile-menu-button mobile-only';
+    mobileButton.type = 'button';
+    mobileButton.setAttribute('aria-label', 'Open navigation');
+    mobileButton.setAttribute('aria-expanded', 'false');
+    mobileButton.innerHTML = `
+        <span class="hamburger-line"></span>
+        <span class="hamburger-line"></span>
+        <span class="hamburger-line"></span>
+    `;
+    this.navElement.appendChild(mobileButton);
+
+    // Mobile menu popover
+    const mobilePopover = document.createElement('div');
+    mobilePopover.className = 'mobile-menu-popover mobile-only';
+    mobilePopover.id = 'pill-nav-mobile-menu';
+    mobileButton.setAttribute('aria-controls', mobilePopover.id);
+
+    const mobileList = document.createElement('ul');
+    mobileList.className = 'mobile-menu-list';
+
+    this.items.forEach((item) => {
+        const li = document.createElement('li');
+        const link = document.createElement('a');
+        link.className = 'mobile-menu-link';
+        link.href = '#';
+        link.dataset.id = item.id;
+        link.textContent = item.label;
+        li.appendChild(link);
+        mobileList.appendChild(li);
+    });
+
+    mobilePopover.appendChild(mobileList);
+    this.navElement.appendChild(mobilePopover);
     
     this.container.appendChild(this.navElement);
+
+    this.mobileMenuButton = mobileButton;
+    this.mobileMenuPopover = mobilePopover;
+    this.mobileMenuLinks = mobileList.querySelectorAll('.mobile-menu-link');
 
     // Initial GSAP setup for circles
     requestAnimationFrame(() => this.setupCircleLayout());
@@ -125,6 +165,44 @@ export class PillNav {
             }
         });
     });
+
+    if (this.mobileMenuButton && this.mobileMenuPopover) {
+        this.mobileMenuButton.addEventListener('click', (e) => {
+            e.preventDefault();
+            this.toggleMobileMenu();
+        });
+
+        this.mobileMenuLinks.forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                const id = link.dataset.id;
+                if (id && id !== this.activeId) {
+                    this.updateActiveState(id);
+                }
+                this.closeMobileMenu();
+            });
+        });
+
+        document.addEventListener('click', (e) => {
+            if (!this.navElement.contains(e.target)) {
+                this.closeMobileMenu();
+            }
+        });
+
+        window.addEventListener('resize', () => this.closeMobileMenu());
+    }
+  }
+
+  toggleMobileMenu() {
+    if (!this.mobileMenuPopover || !this.mobileMenuButton) return;
+    const isOpen = this.mobileMenuPopover.classList.toggle('is-open');
+    this.mobileMenuButton.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+  }
+
+  closeMobileMenu() {
+    if (!this.mobileMenuPopover || !this.mobileMenuButton) return;
+    this.mobileMenuPopover.classList.remove('is-open');
+    this.mobileMenuButton.setAttribute('aria-expanded', 'false');
   }
 
   handleEnter(pill) {

@@ -8,6 +8,13 @@ export class VanillaCardSwap {
         this.items = options.items || [];
         this.width = options.width || 300; // Default width
         this.height = options.height || 400; // Default height
+        this.aspectRatio = options.aspectRatio || (this.width / this.height) || (16 / 9);
+        this.responsive = options.responsive !== false;
+        this.maxWidth = options.maxWidth || 960;
+        this.maxHeight = options.maxHeight || 640;
+        this.minWidth = options.minWidth || 240;
+        this.minHeight = options.minHeight || 180;
+        this.getSize = options.getSize || null;
         this.cardDistance = options.cardDistance || 40;
         this.verticalDistance = options.verticalDistance || 50;
         this.delay = options.delay || 4000;
@@ -47,8 +54,7 @@ export class VanillaCardSwap {
     init() {
         // Create cards from items
         this.container.classList.add('card-swap-container');
-        this.container.style.width = `${this.width}px`;
-        this.container.style.height = `${this.height}px`;
+        this.applySize(this.responsive ? this.getResponsiveSize() : { width: this.width, height: this.height });
         // Ensure container catches touches if needed, but we bind to container mainly.
         this.container.style.touchAction = 'none'; 
 
@@ -65,13 +71,13 @@ export class VanillaCardSwap {
             card.innerHTML = `
                 <div class="card-content" style="width:100%; height:100%; position: relative; overflow: hidden; border-radius: 12px; cursor: pointer; background: #000;">
                     <img src="${item.image}" draggable="false" style="width:100%; height:100%; object-fit: cover; user-drag: none; -webkit-user-drag: none;" alt="${item.title}">
-                    <div class="card-overlay" style="position: absolute; bottom: 0; left: 0; right: 0; padding: 20px; background: linear-gradient(transparent, rgba(0,0,0,0.9)); color: white;">
-                        <div style="display: flex; justify-content: space-between; align-items: end;">
+                    <div class="card-overlay" style="position: absolute; bottom: 0; left: 0; right: 0; padding: clamp(12px, 3vw, 20px); background: linear-gradient(transparent, rgba(0,0,0,0.9)); color: white;">
+                        <div style="display: flex; justify-content: space-between; align-items: end; gap: 12px;">
                             <div>
-                                <img src="static/YoutubeIcon.png" draggable="false" style="width: 30px; height: 30px; margin-bottom: 8px; display: block; user-drag: none; -webkit-user-drag: none;" alt="YouTube">
-                                <h3 style="margin: 0; font-size: 1.2rem; text-shadow: 0 2px 4px rgba(0,0,0,0.5);">${item.title}</h3>
+                                <img src="static/YoutubeIcon.png" draggable="false" style="width: clamp(24px, 4vw, 32px); height: clamp(24px, 4vw, 32px); margin-bottom: 8px; display: block; user-drag: none; -webkit-user-drag: none;" alt="YouTube">
+                                <h3 style="margin: 0; font-size: clamp(0.95rem, 1.6vw, 1.2rem); text-shadow: 0 2px 4px rgba(0,0,0,0.5);">${item.title}</h3>
                             </div>
-                            <span style="font-size: 0.9rem; opacity: 0.9; text-shadow: 0 1px 2px rgba(0,0,0,0.8); white-space: nowrap; margin-left: 10px; margin-bottom: 2px;">${item.views}</span>
+                            <span style="font-size: clamp(0.75rem, 1.2vw, 0.9rem); opacity: 0.9; text-shadow: 0 1px 2px rgba(0,0,0,0.8); white-space: nowrap; margin-left: 10px; margin-bottom: 2px;">${item.views}</span>
                         </div>
                     </div>
                 </div>
@@ -109,6 +115,13 @@ export class VanillaCardSwap {
         }
 
         this.bindDragEvents();
+
+        if (this.responsive) {
+            this.onResize = () => {
+                this.applySize(this.getResponsiveSize());
+            };
+            window.addEventListener('resize', this.onResize);
+        }
     }
 
     addInstructions() {
@@ -139,6 +152,48 @@ export class VanillaCardSwap {
                 rightInst.remove();
             }, 1000);
         }, 3000);
+    }
+
+    getResponsiveSize() {
+        if (typeof this.getSize === 'function') {
+            const size = this.getSize();
+            if (size && size.width && size.height) return size;
+        }
+
+        const parentRect = this.container.parentElement
+            ? this.container.parentElement.getBoundingClientRect()
+            : null;
+        const availableWidth = parentRect && parentRect.width > 0 ? parentRect.width : window.innerWidth;
+        const availableHeight = parentRect && parentRect.height > 0 ? parentRect.height : window.innerHeight;
+
+        const maxWidth = Math.min(availableWidth * 0.95, this.maxWidth);
+        const maxHeight = Math.min(availableHeight * 0.7, this.maxHeight);
+        const width = Math.max(Math.min(maxWidth, maxHeight * this.aspectRatio), this.minWidth);
+        const height = Math.max(Math.round(width / this.aspectRatio), this.minHeight);
+
+        return { width, height };
+    }
+
+    applySize(size) {
+        if (!size || !size.width || !size.height) return;
+        this.width = Math.round(size.width);
+        this.height = Math.round(size.height);
+        this.container.style.width = `${this.width}px`;
+        this.container.style.height = `${this.height}px`;
+
+        if (this.responsive) {
+            this.cardDistance = Math.max(24, Math.round(this.width * 0.08));
+            this.verticalDistance = Math.max(18, Math.round(this.height * 0.06));
+        }
+
+        this.refreshPositions();
+    }
+
+    refreshPositions() {
+        if (!this.cards.length) return;
+        this.cards.forEach((card, i) => {
+            this.placeNow(card, this.makeSlot(i, this.cardDistance, this.verticalDistance, this.cards.length), this.skewAmount);
+        });
     }
 
     bindDragEvents() {
@@ -487,4 +542,3 @@ export class VanillaCardSwap {
         this.startLoop();
     }
 }
-

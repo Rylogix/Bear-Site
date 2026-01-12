@@ -1,230 +1,421 @@
-body, html {
-    margin: 0;
-    padding: 0;
-    width: 100%;
-    height: 100%;
-    /* overflow: hidden; -- Removed to allow scrolling */
-    background: #111; 
-    overflow-x: hidden; /* Prevent horizontal scroll only */
+:root {
+     --page-max: 1200px;
+     --page-pad: clamp(16px, 3vw, 64px);
+     --section-gap: clamp(24px, 5vw, 72px);
+     --nav-height: 56px;
+     --nav-top: clamp(12px, 2.5vw, 32px);
+     --nav-offset: calc(var(--nav-top) + var(--nav-height));
 }
-
+ 
+@media (min-width: 480px) {
+     :root {
+         --page-max: 1280px;
+     }
+}
+ 
+@media (min-width: 768px) {
+    :root {
+        --page-max: 1400px;
+    }
+}
+ 
+@media (min-width: 1024px) {
+    :root {
+        --page-max: 1600px;
+        --nav-height: 60px;
+    }
+}
+ 
+@media (min-width: 1440px) {
+     :root {
+         --page-max: 1750px;
+         --nav-height: 64px;
+     }
+}
+ 
+@media (min-width: 1920px) {
+    :root {
+        --page-max: 2100px;
+        --nav-height: 72px;
+        --section-gap: clamp(32px, 4vw, 96px);
+    }
+}
+ 
+*, *::before, *::after {
+     box-sizing: border-box;
+}
+ 
+html {
+     font-size: clamp(15px, 0.6vw + 12px, 20px);
+}
+ 
+body, html {
+     margin: 0;
+     padding: 0;
+     width: 100%;
+     min-height: 100%;
+     background: #111;
+     color: #fff;
+     overflow-x: hidden;
+}
+ 
+body {
+     min-height: 100dvh;
+}
+ 
+body.modal-open {
+     overflow: hidden;
+}
+ 
+img, video {
+     max-width: 100%;
+     height: auto;
+     display: block;
+}
+ 
+canvas {
+     max-width: 100%;
+     height: auto;
+}
+ 
+:focus-visible {
+     outline: 2px solid #fff;
+     outline-offset: 2px;
+}
+ 
 /* Page shadows (Vignette) */
 body::before {
-    content: '';
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 150px;
-    z-index: 5;
-    pointer-events: none;
-    background: linear-gradient(to bottom, rgba(0,0,0,0.8), transparent);
-    opacity: 0; /* Hidden by default */
-    transition: opacity 0.3s ease;
+     content: '';
+     position: fixed;
+     top: 0;
+     left: 0;
+     width: 100%;
+     height: clamp(80px, 14vh, 160px);
+     z-index: 5;
+     pointer-events: none;
+     background: linear-gradient(to bottom, rgba(0,0,0,0.8), transparent);
+     opacity: 0;
+     transition: opacity 0.3s ease;
 }
-
-/* Class to show top shadow */
+ 
 body.scrolled::before {
-    opacity: 1;
+     opacity: 1;
 }
-
+ 
 body::after {
-    content: '';
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    height: 150px;
-    z-index: 5;
-    pointer-events: none;
-    background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
+     content: '';
+     position: fixed;
+     bottom: 0;
+     left: 0;
+     width: 100%;
+     height: clamp(80px, 14vh, 160px);
+     z-index: 5;
+     pointer-events: none;
+     background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
 }
-
+ 
 #background-container {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: 0;
+     position: fixed;
+     inset: 0;
+     width: 100%;
+     height: 100%;
+     z-index: 0;
 }
-
+ 
 .view-section {
-    min-height: 100vh;
-    width: 100%;
-    position: relative;
-    z-index: 1;
-    padding-top: 80px; /* Space for Nav */
-    box-sizing: border-box;
+     min-height: 100svh;
+     min-height: 100dvh;
+     width: 100%;
+     position: relative;
+     z-index: 1;
+     padding-top: calc(var(--nav-offset) + env(safe-area-inset-top));
+     padding-left: calc(var(--page-pad) + env(safe-area-inset-left));
+     padding-right: calc(var(--page-pad) + env(safe-area-inset-right));
+     padding-bottom: calc(var(--section-gap) + env(safe-area-inset-bottom));
+     display: flex;
+     flex-direction: column;
+     justify-content: flex-start;
+     box-sizing: border-box;
 }
-
-/* Home view specific centering */
+ 
 #home-view {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: flex-start; /* Changed from center to allow manual top spacing */
-    position: absolute; /* Keep home view absolute to center correctly on screen */
-    top: 0;
-    left: 0;
-    height: 100vh;
-    overflow: hidden;
-    padding-top: 25vh; /* Push down by 25% of viewport height */
-    padding-bottom: 70px;
-    padding-left: 70px;
-    padding-right: 70px;
+     align-items: center;
+     justify-content: flex-start;
+     padding-top: calc(var(--nav-offset) + clamp(24px, 10vh, 160px));
+     padding-bottom: calc(var(--section-gap) + 40px);
+     text-align: center;
 }
-
+ 
 .content {
-    position: relative;
-    z-index: 1;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    width: 100%;
-    pointer-events: none;
+     position: relative;
+     z-index: 1;
+     display: flex;
+     flex-direction: column;
+     align-items: center;
+     justify-content: center;
+     width: 100%;
+     max-width: min(var(--page-max), 100%);
+     pointer-events: none;
 }
-
+ 
 .content h1 {
-    /* add black stroke around the text */
-    text-shadow: 0 0 10px rgba(0, 0, 0, 5);
-    filter: drop-shadow(0 0 10px rgba(0, 0, 0, 5));  
-    color: rgb(255, 255, 255);
-    font-size: 5rem;
-    margin-bottom: 0rem;
-    margin-top: 5rem; /* Move down */
-    font-weight: 300;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    mix-blend-mode: difference;
+     text-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+     filter: drop-shadow(0 0 10px rgba(0, 0, 0, 0.5));
+     color: rgb(255, 255, 255);
+     font-size: clamp(2rem, 6vw, 5rem);
+     margin: 0 0 clamp(0.5rem, 2vw, 1.5rem);
+     font-weight: 300;
+     letter-spacing: clamp(1px, 0.3vw, 3px);
+     text-transform: uppercase;
+     mix-blend-mode: difference;
 }
-
+ 
 .links-container {
-    display: flex;
-    gap: 4rem;
-    pointer-events: auto;
-    align-items: center;
+     display: flex;
+     flex-wrap: wrap;
+     gap: clamp(16px, 4vw, 48px);
+     pointer-events: auto;
+     align-items: center;
+     justify-content: center;
+     margin-top: clamp(12px, 3vh, 32px);
+     max-width: min(520px, 100%);
 }
-
+ 
 .social-link {
-    display: flex;
-    width: 97px;
-    height: 97px;
-    margin-top: 3rem; /* Move down */
-    align-items: center;
-    justify-content: center;
-    transition: opacity 0.3s ease;
-    /* Remove default cursor since we have custom one */
-    cursor: none;
+     display: flex;
+     width: clamp(44px, 8vw, 96px);
+     height: clamp(44px, 8vw, 96px);
+     align-items: center;
+     justify-content: center;
+     transition: opacity 0.3s ease;
+     cursor: none;
 }
-
+ 
 .social-link img {
-    /* drop shadow below doesnt work. fix it. */
-    filter: drop-shadow(0 0 10px rgba(0, 0, 0, 5));   
-    width: 130%;
-    height: 130%;
-    object-fit: contain;
+     filter: drop-shadow(0 0 10px rgba(0, 0, 0, 0.5));
+     width: 100%;
+     height: 100%;
+     object-fit: contain;
+     transform: scale(1.15);
 }
-
+ 
 .fanart-container {
-    max-width: 1600px;
-    margin: 0 auto;
-    padding: 2rem;
-    padding-bottom: 200px; /* Extra space at bottom */
+     max-width: min(var(--page-max), 100%);
+     margin: 0 auto;
+     width: 100%;
+     padding-bottom: clamp(120px, 12vw, 220px);
 }
-
-/* Elastic Slider Container Position */
+ 
+.fanart-title {
+     text-align: center;
+     color: white;
+     margin: clamp(1.5rem, 4vh, 3rem) 0;
+     font-weight: 600;
+     font-size: clamp(1.5rem, 3vw, 2.4rem);
+     text-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+}
+ 
 #music-control-container {
-    position: fixed;
-    bottom: 2rem;
-    right: 2rem;
-    z-index: 100;
-    padding: 10px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 8px;
+     position: fixed;
+     bottom: calc(1rem + env(safe-area-inset-bottom));
+     right: calc(1rem + env(safe-area-inset-right));
+     z-index: 100;
+     padding: 10px;
+     display: flex;
+     flex-direction: column;
+     align-items: center;
+     gap: 8px;
+     max-width: min(90vw, 18rem);
 }
-
+ 
 .track-title {
-    color: white;
-    font-family: sans-serif;
-    font-size: 0.9rem;
-    font-weight: 500;
-    text-shadow: 0 1px 3px rgba(0,0,0,0.5);
-    letter-spacing: 0.5px;
+     color: white;
+     font-family: sans-serif;
+     font-size: clamp(0.75rem, 1.5vw, 0.95rem);
+     font-weight: 500;
+     text-shadow: 0 1px 3px rgba(0,0,0,0.5);
+     letter-spacing: 0.5px;
+     text-align: center;
 }
-
+ 
 #curved-loop-container {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    pointer-events: none;
-    z-index: 0; /* Behind content but in front of background? content is z-index 1. So this is behind content. */
+     position: absolute;
+     top: 0;
+     left: 0;
+     width: 100%;
+     height: 100%;
+     pointer-events: none;
+     z-index: 0;
 }
-
-/* Ensure SVG inside has pointer events */
+ 
 #curved-loop-container svg {
-    pointer-events: auto;
+     pointer-events: auto;
 }
-
+ 
 #scrambled-text-container {
-    margin-top: 3rem;
-    max-width: 600px;
-    text-align: center;
-    color: #ffffff; /* Fully white */
-    font-family: monospace;
-    font-size: 1.1rem;
-    line-height: 1.6;
-    pointer-events: auto;
-    padding: 1rem;
-    text-shadow: 0 0 10px rgba(0, 0, 0, 0.8); /* Drop shadow */
-    /* Optional backdrop for readability if needed */
-    /* background: rgba(0,0,0,0.2);
-    border-radius: 8px; */
+    margin: clamp(16px, 4vh, 48px) auto 0;
+     max-width: min(60ch, 100%);
+     text-align: center;
+     color: #ffffff;
+     font-family: monospace;
+     font-size: clamp(0.95rem, 1.2vw, 1.2rem);
+     line-height: 1.6;
+     pointer-events: auto;
+     padding: 1rem;
+     text-shadow: 0 0 10px rgba(0, 0, 0, 0.8);
 }
-
-/* Scrambled Text Spans */
+ 
 #scrambled-text-container span {
-    display: inline-block;
-    transition: color 0.1s;
-    cursor: default;
+     display: inline-block;
+     transition: color 0.1s;
+     cursor: default;
 }
-
-/* --- Curved Loop Styles (Inlined from CurvedLoop/styles.css) --- */
+ 
+.view-youtube {
+     align-items: center;
+     justify-content: center;
+     overflow-x: hidden;
+}
+ 
+.youtube-view-inner {
+     position: relative;
+     width: 100%;
+     min-height: calc(100dvh - var(--nav-offset));
+     display: flex;
+     align-items: center;
+     justify-content: center;
+     padding: clamp(16px, 3vw, 32px) 0;
+}
+ 
+#card-swap-container {
+     max-width: 100%;
+}
+ 
+#fanart-modal {
+     display: none;
+     position: fixed;
+     inset: 0;
+     z-index: 1000;
+     background: rgba(0,0,0,0.8);
+     align-items: center;
+     justify-content: center;
+     opacity: 0;
+     cursor: pointer;
+     padding: calc(16px + env(safe-area-inset-top)) calc(16px + env(safe-area-inset-right)) calc(16px + env(safe-area-inset-bottom)) calc(16px + env(safe-area-inset-left));
+     overflow: auto;
+     overscroll-behavior: contain;
+}
+ 
+#decay-card-container {
+     width: min(90vw, 560px);
+     aspect-ratio: 4 / 5;
+     height: auto;
+     max-height: min(90vh, 760px);
+     pointer-events: none;
+     position: relative;
+}
+ 
+/* --- Curved Loop Styles --- */
 .curved-loop-jacket {
-  min-height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
+   min-height: 100svh;
+   min-height: 100dvh;
+   display: flex;
+   align-items: center;
+   justify-content: center;
+   width: 100%;
 }
-
+ 
 .curved-loop-svg {
-  user-select: none;
-  width: 100%;
-  aspect-ratio: 100 / 12;
-  overflow: visible;
-  display: block;
-  font-size: 6rem;
-  fill: #ffffff;
-  user-select: none;
-  -moz-user-select: none;
-  -webkit-user-select: none;
-  font-weight: 700;
-  text-transform: uppercase;
-  line-height: 1;
-  transform: translateY(100px); /* Move down by 100px */
-  text-shadow: 0 0 10px rgba(0, 0, 0, 0.5); /* Drop shadow */
-  filter: drop-shadow(0 0 10px rgba(0, 0, 0, 5));
-  
-  /* Customization */
-  --loop-spread: 4000; /* Increase spread to fit more text (e.g. 4000 for wider) */
-  --loop-font-size: 130px; /* Size of the text */
-  --loop-curve-height: 500; /* Height of the curve (unitless, e.g. 200, 300, 500) */
-  --loop-text-spacing: 2px; /* Letter spacing */
+   user-select: none;
+   width: 100%;
+   aspect-ratio: 100 / 12;
+   overflow: visible;
+   display: block;
+  font-size: var(--loop-font-size);
+   fill: #ffffff;
+   -moz-user-select: none;
+   -webkit-user-select: none;
+   font-weight: 700;
+   text-transform: uppercase;
+   line-height: 1;
+   transform: translateY(clamp(24px, 8vh, 120px));
+   text-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+   filter: drop-shadow(0 0 10px rgba(0, 0, 0, 0.5));
+
+  --loop-spread: 3000;
+  --loop-curve-height: 420;
+  --loop-font-size: clamp(56px, 8vw, 140px);
+  --loop-text-spacing: 2px;
+}
+ 
+.responsive-debug {
+     position: fixed;
+     left: 12px;
+     bottom: 12px;
+     z-index: 9999;
+     background: rgba(0, 0, 0, 0.75);
+     color: #fff;
+     padding: 8px 10px;
+     border-radius: 8px;
+     font-family: monospace;
+     font-size: 12px;
+     letter-spacing: 0.2px;
+     display: none;
+     pointer-events: none;
+}
+ 
+.responsive-debug.is-visible {
+    display: block;
 }
 
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+@media (max-width: 768px) {
+    table {
+        display: block;
+        overflow-x: auto;
+    }
+
+    table th,
+    table td {
+        white-space: nowrap;
+    }
+}
+
+@media (min-width: 768px) {
+    .curved-loop-svg {
+        --loop-spread: 3600;
+        --loop-curve-height: 460;
+    }
+}
+
+@media (min-width: 1024px) {
+    .curved-loop-svg {
+        --loop-spread: 4000;
+        --loop-curve-height: 520;
+    }
+}
+
+@media (min-width: 1920px) {
+    .curved-loop-svg {
+        --loop-font-size: clamp(72px, 6vw, 180px);
+    }
+}
+
+@media (max-width: 480px) {
+    #music-control-container {
+        left: 50%;
+        right: auto;
+         transform: translateX(-50%);
+         width: min(90vw, 20rem);
+     }
+}
+ 
+@media (orientation: landscape) and (max-height: 500px) {
+     #home-view {
+         padding-top: calc(var(--nav-offset) + clamp(12px, 6vh, 64px));
+     }
+}

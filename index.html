@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>Beardabear Experimental Revamp</title>
     <link rel="stylesheet" href="TargetCursor/styles.css">
     <link rel="stylesheet" href="DitherBackground/styles.css">
@@ -50,27 +50,29 @@
     <!-- FanArt View -->
     <div id="fanart-view" class="view-section" style="display: none; opacity: 0;">
         <div class="fanart-container"> 
-            <h2 style="text-align: center; color: white; margin: 2rem 0; font-weight: 600; font-size: 2rem; text-shadow: 0 0 10px rgba(0, 0, 0, 5);">Fan Art Gallery</h2>
+            <h2 class="fanart-title">Fan Art Gallery</h2>
             <div id="masonry-container"></div>
         </div>
     </div>
 
     <!-- Youtube View -->
-    <div id="youtube-view" class="view-section" style="display: none; opacity: 0; align-items: center; justify-content: center; height: 100vh; overflow: hidden; position: absolute; top: 0; left: 0; width: 100%;">
-         <div style="position: relative; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;">
+    <div id="youtube-view" class="view-section view-youtube" style="display: none; opacity: 0;">
+         <div class="youtube-view-inner">
             <div id="card-swap-container"></div>
          </div>
     </div>
 
     <!-- Fanart Modal -->
-    <div id="fanart-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 1000; background: rgba(0,0,0,0.8); align-items: center; justify-content: center; opacity: 0; cursor: pointer;">
-        <div id="decay-card-container" style="width: 600px; height: 750px; pointer-events: none; max-width: 90vw; max-height: 90vh; position: relative;"></div>
+    <div id="fanart-modal" role="dialog" aria-modal="true" aria-hidden="true">
+        <div id="decay-card-container"></div>
     </div>
 
     <!-- Music Control -->
     <div id="music-control-container">
         <div class="track-title">(DELTARUNE - Hip Shop)</div>
     </div>
+
+    <div id="responsive-debug" class="responsive-debug" aria-live="polite"></div>
 
     <script src="static/gsap.min.js"></script>
     <script type="module">
@@ -465,10 +467,10 @@
                         const swapContainer = document.getElementById('card-swap-container');
                         new VanillaCardSwap(swapContainer, { 
                             items: youtubeVideos,
-                            width: 640,
-                            height: 360,
-                            cardDistance: 50,
-                            verticalDistance: 30,
+                            aspectRatio: 16 / 9,
+                            responsive: true,
+                            maxWidth: 960,
+                            maxHeight: 640,
                             skewAmount: 4,
                             delay: 1000,
                             pauseOnHover: false,
@@ -511,6 +513,8 @@
 
         const openModal = (imgUrl, authorName) => {
             modal.style.display = 'flex';
+            document.body.classList.add('modal-open');
+            modal.setAttribute('aria-hidden', 'false');
             gsap.to(modal, { opacity: 1, duration: 0.3 });
             
             // Clean up old
@@ -546,11 +550,13 @@
                 duration: 0.3, 
                 onComplete: () => {
                     modal.style.display = 'none';
+                    document.body.classList.remove('modal-open');
+                    modal.setAttribute('aria-hidden', 'true');
                     if (currentLanyard) {
                         currentLanyard.destroy();
                         currentLanyard = null;
                     }
-                } 
+                }
             });
         };
 
@@ -638,6 +644,50 @@
                 document.body.classList.remove('scrolled');
             }
         });
+
+        // Responsive debug overlay (Ctrl+Shift+D toggles, ?debug in URL enables)
+        const debugEl = document.getElementById('responsive-debug');
+        if (debugEl) {
+            const getBreakpointLabel = () => {
+                const width = window.innerWidth;
+                if (width >= 1920) return 'tv';
+                if (width >= 1440) return 'xl';
+                if (width >= 1024) return 'lg';
+                if (width >= 768) return 'md';
+                if (width >= 480) return 'sm';
+                return 'xs';
+            };
+
+            const updateDebug = () => {
+                const width = window.innerWidth;
+                const height = window.innerHeight;
+                debugEl.textContent = `${getBreakpointLabel()} ${width}x${height}`;
+            };
+
+            const setDebugVisible = (visible) => {
+                debugEl.classList.toggle('is-visible', visible);
+                localStorage.setItem('responsiveDebug', visible ? '1' : '0');
+                if (visible) updateDebug();
+            };
+
+            const debugFromUrl = new URLSearchParams(window.location.search).has('debug');
+            if (debugFromUrl) {
+                localStorage.setItem('responsiveDebug', '1');
+            }
+
+            if (localStorage.getItem('responsiveDebug') === '1') {
+                setDebugVisible(true);
+            }
+
+            document.addEventListener('keydown', (e) => {
+                if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === 'd') {
+                    setDebugVisible(!debugEl.classList.contains('is-visible'));
+                }
+            });
+
+            window.addEventListener('resize', updateDebug);
+            window.addEventListener('orientationchange', updateDebug);
+        }
 
     </script>
 </body>

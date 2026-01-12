@@ -38,7 +38,7 @@
     bottom: 0;
     left: 0;
     width: 100%;
-    padding: 20px 10px 10px 10px;
+    padding: clamp(12px, 3vw, 20px) clamp(8px, 2vw, 12px);
     background: linear-gradient(to top, rgba(0,0,0,0.9), transparent);
     color: white;
     opacity: 0;
@@ -54,7 +54,7 @@
 }
 
 .masonry-author {
-    font-size: 0.9rem;
+    font-size: clamp(0.8rem, 1.5vw, 0.95rem);
     font-weight: 600;
     text-shadow: 0 2px 4px rgba(0,0,0,0.8);
     letter-spacing: 0.5px;

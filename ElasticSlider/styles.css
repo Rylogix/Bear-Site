@@ -4,7 +4,7 @@
     align-items: center;
     justify-content: center;
     gap: 0.5rem; /* Reduced gap */
-    width: 14rem; /* Slightly wider */
+    width: min(14rem, 80vw);
 }
 
 .slider-wrapper {
@@ -86,4 +86,10 @@
     transform: translateY(0);
     text-shadow: 0 2px 4px rgba(0,0,0,0.8);
     pointer-events: none;
+}
+
+@media (min-width: 1920px) {
+    .slider-container {
+        width: min(18rem, 30vw);
+    }
 }
