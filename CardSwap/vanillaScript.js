@@ -20,9 +20,9 @@ export class VanillaCardSwap {
         this.delay = options.delay || 4000;
         this.pauseOnHover = options.pauseOnHover !== false;
         this.skewAmount = options.skewAmount || 4;
-        this.frontScale = options.frontScale || 0.94;
-        this.scaleStep = options.scaleStep || 0.035;
-        this.minScale = options.minScale || 0.72;
+        this.frontScale = options.frontScale || 2;
+        this.scaleStep = options.scaleStep || 0.2;
+        this.minScale = options.minScale || 0.7;
         this.depthMultiplier = options.depthMultiplier || 0.6;
         this.quality = options.quality || 'high';
         this.easing = options.easing || (this.quality === 'low' ? 'power2.inOut' : 'elastic');
