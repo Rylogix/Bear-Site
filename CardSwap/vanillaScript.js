@@ -20,6 +20,10 @@ export class VanillaCardSwap {
         this.delay = options.delay || 4000;
         this.pauseOnHover = options.pauseOnHover !== false;
         this.skewAmount = options.skewAmount || 4;
+        this.frontScale = options.frontScale || 0.94;
+        this.scaleStep = options.scaleStep || 0.035;
+        this.minScale = options.minScale || 0.72;
+        this.depthMultiplier = options.depthMultiplier || 0.6;
         this.quality = options.quality || 'high';
         this.easing = options.easing || (this.quality === 'low' ? 'power2.inOut' : 'elastic');
 
@@ -306,10 +310,13 @@ export class VanillaCardSwap {
     }
 
     makeSlot(i, distX, distY, total) {
+        const scale = Math.max(this.minScale, this.frontScale - i * this.scaleStep);
+
         return {
             x: i * distX,
             y: -i * distY,
-            z: -i * distX * 1.5,
+            z: -i * distX * this.depthMultiplier,
+            scale,
             zIndex: total - i
         };
     }
@@ -319,6 +326,7 @@ export class VanillaCardSwap {
             x: slot.x,
             y: slot.y,
             z: slot.z,
+            scale: slot.scale,
             skewY: this.quality === 'low' ? 0 : skew, // Disable skew on low quality
             zIndex: slot.zIndex,
             xPercent: -50,
@@ -415,6 +423,7 @@ export class VanillaCardSwap {
                 x: slot.x,
                 y: slot.y,
                 z: slot.z,
+                scale: slot.scale,
                 rotation: 0, // Reset rotation if any
                 opacity: 1,
                 duration: this.config.durMove,
@@ -436,6 +445,7 @@ export class VanillaCardSwap {
             x: backSlot.x,
             y: backSlot.y,
             z: backSlot.z,
+            scale: backSlot.scale,
             rotation: 0,
             opacity: 1, // Fade back in
             duration: this.config.durReturn,
@@ -488,6 +498,7 @@ export class VanillaCardSwap {
                 y: slot.y,
                 z: slot.z,
                 zIndex: slot.zIndex, 
+                scale: slot.scale,
                 rotation: 0, // Reset rotation
                 duration: this.config.durMove,
                 ease: this.config.ease
@@ -508,6 +519,7 @@ export class VanillaCardSwap {
                 x: frontSlot.x, 
                 y: frontSlot.y, 
                 z: frontSlot.z, 
+                scale: frontSlot.scale,
                 rotation: 0,
                 opacity: 1,
                 duration: this.config.durReturn,
