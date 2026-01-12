@@ -23,6 +23,7 @@ export class VanillaCardSwap {
         this.frontScale = options.frontScale || 1.1;
         this.scaleStep = options.scaleStep || 0.05;
         this.minScale = options.minScale || 0.8;
+        this.globalScale = options.globalScale || 0.2;
         this.depthMultiplier = options.depthMultiplier || 0.6;
         this.quality = options.quality || 'high';
         this.easing = options.easing || (this.quality === 'low' ? 'power2.inOut' : 'elastic');
@@ -310,7 +311,8 @@ export class VanillaCardSwap {
     }
 
     makeSlot(i, distX, distY, total) {
-        const scale = Math.max(this.minScale, this.frontScale - i * this.scaleStep);
+        const baseScale = Math.max(this.minScale, this.frontScale - i * this.scaleStep);
+        const scale = baseScale * this.globalScale;
 
         return {
             x: i * distX,
