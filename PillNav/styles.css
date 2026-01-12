@@ -1,6 +1,6 @@
 .pill-nav-container {
   position: fixed;
-  top: calc(var(--nav-top, 12px) + env(safe-area-inset-top));
+  top: calc(var(--nav-top, 12px) + 5px + env(safe-area-inset-top));
   left: 50%;
   transform: translateX(-50%);
   z-index: 99;
@@ -277,7 +277,7 @@ body.is-phone .pill-nav-container {
   justify-content: flex-start;
   width: max-content;
   padding: 0;
-  top: calc(env(safe-area-inset-top) + 2px);
+  top: calc(env(safe-area-inset-top) + 7px);
 }
 
 body.is-phone .pill-nav {
