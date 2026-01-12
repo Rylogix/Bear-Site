@@ -272,12 +272,11 @@
 }
 
 body.is-phone .pill-nav-container {
-  left: 0;
+  left: calc(env(safe-area-inset-left) + 2px);
   transform: none;
   justify-content: flex-start;
-  width: auto;
-  padding-left: calc(var(--page-pad, 16px) + env(safe-area-inset-left));
-  padding-right: 0;
+  width: max-content;
+  padding: 0;
   top: calc(env(safe-area-inset-top) + 2px);
 }
 

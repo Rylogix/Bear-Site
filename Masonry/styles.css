@@ -28,6 +28,15 @@
     box-shadow: 0 6px 20px rgba(0,0,0,0.4);
 }
 
+.masonry-img-container.is-loading img {
+    opacity: 0;
+}
+
+.masonry-img-container.is-loaded img {
+    opacity: 1;
+    transition: opacity 0.25s ease;
+}
+
 .masonry-img-container.is-loading::after {
     content: '';
     position: absolute;
