@@ -21,8 +21,8 @@ export class VanillaCardSwap {
         this.pauseOnHover = options.pauseOnHover !== false;
         this.skewAmount = options.skewAmount || 4;
         this.frontScale = options.frontScale || 1.1;
-        this.scaleStep = options.scaleStep || 0.05;
-        this.minScale = options.minScale || 0.8;
+        this.scaleStep = options.scaleStep || 0.03;
+        this.minScale = options.minScale || 0.2;
         this.globalScale = options.globalScale || 0.75;
         this.depthMultiplier = options.depthMultiplier || 0.6;
         this.quality = options.quality || 'high';
