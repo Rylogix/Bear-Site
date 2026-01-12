@@ -86,10 +86,31 @@
     transform: translateY(0);
     text-shadow: 0 2px 4px rgba(0,0,0,0.8);
     pointer-events: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 20px;
 }
 
 @media (min-width: 1920px) {
     .slider-container {
         width: min(18rem, 30vw);
     }
+}
+
+.slider-container.is-loading .value-indicator {
+    opacity: 1;
+    color: transparent;
+    text-shadow: none;
+    transform: translateY(-10px);
+}
+
+.slider-container.is-loading .value-indicator::after {
+    content: '';
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-top-color: #fff;
+    animation: spin 0.9s linear infinite;
 }

@@ -15,8 +15,23 @@ export class Masonry {
     }
 
     init() {
+        this.layoutRaf = null;
+        this.observer = 'IntersectionObserver' in window
+            ? new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (!entry.isIntersecting) return;
+                    const img = entry.target;
+                    const dataSrc = img.dataset.src;
+                    if (dataSrc) {
+                        img.src = dataSrc;
+                        img.removeAttribute('data-src');
+                    }
+                    this.observer.unobserve(img);
+                });
+            }, { rootMargin: '200px 0px' })
+            : null;
         this.render();
-        window.addEventListener('resize', () => this.layout());
+        window.addEventListener('resize', () => this.scheduleLayout());
     }
 
     getColumns() {
@@ -32,8 +47,9 @@ export class Masonry {
     render() {
         this.container.classList.add('masonry-grid');
         this.container.innerHTML = '';
+        const eagerCount = 6;
         
-        this.items.forEach(item => {
+        this.items.forEach((item, index) => {
             const itemWrapper = document.createElement('div');
             itemWrapper.className = 'masonry-item';
             
@@ -41,9 +57,23 @@ export class Masonry {
             imgContainer.className = 'masonry-img-container';
             
             const img = document.createElement('img');
-            img.src = item.url;
+            img.decoding = 'async';
+            img.loading = index < eagerCount ? 'eager' : 'lazy';
+            img.fetchPriority = index < eagerCount ? 'high' : 'low';
+            img.style.aspectRatio = '4 / 3';
+            img.dataset.ratio = '0.75';
+            if (index < eagerCount) {
+                img.src = item.url;
+            } else {
+                img.dataset.src = item.url;
+                img.src = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==';
+                if (this.observer) {
+                    this.observer.observe(img);
+                } else {
+                    img.src = item.url;
+                }
+            }
             img.alt = item.author || 'Fanart';
-            img.loading = 'lazy';
             
             // Metadata overlay (Author)
             const overlay = document.createElement('div');
@@ -64,11 +94,24 @@ export class Masonry {
             item.element = itemWrapper;
             
             // Image load handler to trigger relayout
-            img.onload = () => this.layout();
+            img.onload = () => {
+                if (img.naturalWidth && img.naturalHeight) {
+                    img.dataset.ratio = (img.naturalHeight / img.naturalWidth).toFixed(4);
+                }
+                this.scheduleLayout();
+            };
         });
 
         // Initial layout attempt
-        this.layout();
+        this.scheduleLayout();
+    }
+
+    scheduleLayout() {
+        if (this.layoutRaf) return;
+        this.layoutRaf = requestAnimationFrame(() => {
+            this.layoutRaf = null;
+            this.layout();
+        });
     }
 
     layout() {
@@ -87,7 +130,10 @@ export class Masonry {
             // For smoother layout, we might need aspect ratios in data. 
             // Without it, we rely on img.height after load.
             
-            const displayHeight = img.height ? (img.height / img.width) * colWidth : 0;
+            const ratio = img.naturalWidth && img.naturalHeight
+                ? (img.naturalHeight / img.naturalWidth)
+                : parseFloat(img.dataset.ratio || '0.75');
+            const displayHeight = ratio * colWidth;
             const itemHeight = displayHeight; // + padding if any
 
             // Find shortest column

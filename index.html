@@ -16,10 +16,14 @@
     <link rel="stylesheet" href="revamp.css">
 </head>
 <body>
-    <div id="background-container"></div>
+    <div id="app-loader" aria-live="polite" aria-busy="true">
+        <div class="loader-spinner" role="status" aria-label="Loading"></div>
+    </div>
+    <div id="app-root">
+        <div id="background-container"></div>
     
-    <!-- Navigation Container -->
-    <div id="pill-nav-container"></div>
+        <!-- Navigation Container -->
+        <div id="pill-nav-container"></div>
 
     <!-- Home View -->
     <div id="home-view" class="view-section">
@@ -42,7 +46,7 @@
             </div>
             
             <div id="scrambled-text-container" class="text-block">
-                Hey, I'm BearDaBear. I love making things and making people laugh. If you find me funny, or like what I do in general, join my discord server. Thats where I announce everything
+                Hey, I'm BearDaBear. I love making things and making people laugh. If you find me funny, or like what I do in general, join my discord server. That's where I announce everything.
             </div>
         </div>
     </div>
@@ -72,25 +76,48 @@
         <div class="track-title">(DELTARUNE - Hip Shop)</div>
     </div>
 
-    <div id="responsive-debug" class="responsive-debug" aria-live="polite"></div>
+        <div id="responsive-debug" class="responsive-debug" aria-live="polite"></div>
+    </div>
 
     <script src="static/gsap.min.js"></script>
     <script type="module">
         import { TargetCursor } from './TargetCursor/script.js';
         import { DitherBackground } from './DitherBackground/script.js';
         import { PillNav } from './PillNav/script.js';
-        import { Masonry } from './Masonry/script.js';
         import { ElasticSlider } from './ElasticSlider/script.js';
         import { VanillaScrambledText } from './ScrambledText/script.js';
         import { VanillaCurvedLoop } from './CurvedLoop/script.js';
-        import { VanillaLanyard } from './Lanyard/vanillaScript.js';
-        import { VanillaCardSwap } from './CardSwap/vanillaScript.js';
         import { getPerformanceTier } from './utils/performance.js';
         // import gsap from 'https://cdn.skypack.dev/gsap'; // Removed in favor of local static/gsap.min.js
 
         // Detect Performance Tier
         const tier = getPerformanceTier();
         console.log('Performance Tier:', tier);
+
+        let MasonryModule = null;
+        let CardSwapModule = null;
+        let LanyardModule = null;
+
+        const loadMasonry = async () => {
+            if (!MasonryModule) {
+                MasonryModule = await import('./Masonry/script.js');
+            }
+            return MasonryModule;
+        };
+
+        const loadCardSwap = async () => {
+            if (!CardSwapModule) {
+                CardSwapModule = await import('./CardSwap/vanillaScript.js');
+            }
+            return CardSwapModule;
+        };
+
+        const loadLanyard = async () => {
+            if (!LanyardModule) {
+                LanyardModule = await import('./Lanyard/vanillaScript.js');
+            }
+            return LanyardModule;
+        };
 
         // --- Data ---
         // Sorted by Modification Date (Newest first) as requested
@@ -417,6 +444,9 @@
             else if (id === 'fanart') targetView = fanartView;
             else if (id === 'youtube') targetView = youtubeView;
 
+            const lockScroll = id === 'home' || id === 'youtube';
+            document.body.classList.toggle('no-scroll', lockScroll);
+
             // Hide others
             [homeView, fanartView, youtubeView].forEach(view => {
                 if (view !== targetView) {
@@ -439,19 +469,21 @@
             
             if (isVisible) {
                 gsap.to(targetView, { opacity: 1, duration: 0.3 });
-                 if (id === 'home') {
+                 if (id === 'home' || id === 'youtube') {
                     window.scrollTo(0, 0);
                     document.body.classList.remove('scrolled');
                  }
             } else {
-                setTimeout(() => {
+                setTimeout(async () => {
                     targetView.style.opacity = 0;
                     if (id === 'home') {
-                        targetView.style.display = 'flex';
+                        targetView.style.display = 'grid';
                         window.scrollTo(0, 0);
                         document.body.classList.remove('scrolled');
                     } else if (id === 'youtube') {
                         targetView.style.display = 'flex';
+                        window.scrollTo(0, 0);
+                        document.body.classList.remove('scrolled');
                     } else {
                         targetView.style.display = 'block';
                     }
@@ -460,11 +492,13 @@
 
                     if (id === 'fanart' && !isMasonryInitialized) {
                         const masonryContainer = document.getElementById('masonry-container');
+                        const { Masonry } = await loadMasonry();
                         new Masonry(masonryContainer, { items: fanartItems });
                         isMasonryInitialized = true;
                     }
                     if (id === 'youtube' && !isCardSwapInitialized) {
                         const swapContainer = document.getElementById('card-swap-container');
+                        const { VanillaCardSwap } = await loadCardSwap();
                         new VanillaCardSwap(swapContainer, { 
                             items: youtubeVideos,
                             aspectRatio: 16 / 9,
@@ -535,11 +569,13 @@
                 decayContainer.style.pointerEvents = 'auto'; // Enable interactions
 
                 // Initialize Lanyard
-                currentLanyard = new VanillaLanyard(decayContainer, {
-                    image: imgUrl,
-                    aspectRatio: aspectRatio,
-                    text: authorName, // Lanyard might not display text yet, but good to pass
-                    quality: tier
+                loadLanyard().then(({ VanillaLanyard }) => {
+                    currentLanyard = new VanillaLanyard(decayContainer, {
+                        image: imgUrl,
+                        aspectRatio: aspectRatio,
+                        text: authorName, // Lanyard might not display text yet, but good to pass
+                        quality: tier
+                    });
                 });
             };
         };
@@ -602,11 +638,12 @@
         const musicContainer = document.getElementById('music-control-container');
         const bgMusic = new Audio('static/DELTARUNE - HIP SHOP.ogg');
         bgMusic.loop = true;
-        bgMusic.volume = 0.5; // Default volume (50/100)
+        bgMusic.volume = 0.2; // Default volume (20/100)
+        bgMusic.preload = 'auto';
 
         // Initialize ElasticSlider for volume
-        new ElasticSlider(musicContainer, {
-            defaultValue: 50,
+        const volumeSlider = new ElasticSlider(musicContainer, {
+            defaultValue: 20,
             minValue: 0,
             maxValue: 100,
             leftIcon: '🔈', // Volume down icon char
@@ -618,22 +655,41 @@
                 
                 // If user interacts with slider, ensure music is playing (in case it was blocked or paused)
                 if (bgMusic.paused && newVolume > 0) {
-                    bgMusic.play().catch(e => console.log('Autoplay prevented:', e));
+                    bgMusic.play().catch(() => {});
                 }
             }
         });
 
+        const setAudioLoading = (isLoading) => {
+            if (volumeSlider && typeof volumeSlider.setLoading === 'function') {
+                volumeSlider.setLoading(isLoading);
+            }
+        };
+
+        setAudioLoading(true);
+
+        bgMusic.addEventListener('loadstart', () => setAudioLoading(true));
+        bgMusic.addEventListener('waiting', () => setAudioLoading(true));
+        bgMusic.addEventListener('stalled', () => setAudioLoading(true));
+        bgMusic.addEventListener('canplay', () => setAudioLoading(false));
+        bgMusic.addEventListener('canplaythrough', () => setAudioLoading(false));
+        bgMusic.addEventListener('playing', () => setAudioLoading(false));
+        bgMusic.addEventListener('error', () => setAudioLoading(false));
+
+        const attemptPlay = () => bgMusic.play().catch(() => {});
+
         // Try to autoplay on load (usually blocked)
-        bgMusic.play().catch(() => {
-            // If blocked, add one-time listener to start on interaction
-            const startMusic = () => {
-                bgMusic.play();
-                document.removeEventListener('click', startMusic);
-                document.removeEventListener('keydown', startMusic);
-            };
-            document.addEventListener('click', startMusic);
-            document.addEventListener('keydown', startMusic);
-        });
+        attemptPlay();
+        // If blocked, add one-time listener to start on interaction
+        const startMusic = () => {
+            attemptPlay();
+            document.removeEventListener('click', startMusic);
+            document.removeEventListener('keydown', startMusic);
+            document.removeEventListener('touchstart', startMusic);
+        };
+        document.addEventListener('click', startMusic);
+        document.addEventListener('keydown', startMusic);
+        document.addEventListener('touchstart', startMusic, { passive: true });
 
 
         // Scroll listener for top shadow
@@ -644,6 +700,18 @@
                 document.body.classList.remove('scrolled');
             }
         });
+
+        const setAppReady = () => {
+            document.body.classList.add('app-ready');
+            const loader = document.getElementById('app-loader');
+            if (loader) loader.setAttribute('aria-busy', 'false');
+        };
+
+        if (document.readyState === 'complete') {
+            requestAnimationFrame(setAppReady);
+        } else {
+            window.addEventListener('load', () => requestAnimationFrame(setAppReady));
+        }
 
         // Responsive debug overlay (Ctrl+Shift+D toggles, ?debug in URL enables)
         const debugEl = document.getElementById('responsive-debug');

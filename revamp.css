@@ -3,8 +3,8 @@
      --page-pad: clamp(16px, 3vw, 64px);
      --section-gap: clamp(24px, 5vw, 72px);
      --nav-height: 56px;
-     --nav-top: clamp(12px, 2.5vw, 32px);
-     --nav-offset: calc(var(--nav-top) + var(--nav-height));
+    --nav-top: clamp(8px, 1.8vw, 20px);
+    --nav-offset: calc(var(--nav-top) + var(--nav-height));
 }
  
 @media (min-width: 480px) {
@@ -60,11 +60,66 @@ body, html {
 }
  
 body {
-     min-height: 100dvh;
+    min-height: 100dvh;
 }
- 
+
+#app-root {
+    min-height: 100dvh;
+    opacity: 0;
+    transition: opacity 0.8s ease;
+}
+
+body.app-ready #app-root {
+    opacity: 1;
+}
+
+#app-loader {
+    position: fixed;
+    inset: 0;
+    background: #000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10000;
+    opacity: 1;
+    transition: opacity 0.8s ease;
+}
+
+#app-loader .loader-spinner {
+    width: 32px;
+    height: 32px;
+    position: relative;
+    transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+#app-loader .loader-spinner::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    border: 3px solid rgba(255, 255, 255, 0.2);
+    border-top-color: #fff;
+    animation: spin 0.9s linear infinite;
+}
+
+body.app-ready #app-loader {
+    opacity: 0;
+    pointer-events: none;
+}
+
+body.app-ready #app-loader .loader-spinner {
+    transform: scale(1.15);
+    opacity: 0;
+}
+
+body.no-scroll {
+    overflow: hidden;
+    height: 100dvh;
+    overscroll-behavior: none;
+}
+
 body.modal-open {
-     overflow: hidden;
+    overflow: hidden;
 }
  
 img, video {
@@ -132,30 +187,40 @@ body::after {
      padding-left: calc(var(--page-pad) + env(safe-area-inset-left));
      padding-right: calc(var(--page-pad) + env(safe-area-inset-right));
      padding-bottom: calc(var(--section-gap) + env(safe-area-inset-bottom));
-     display: flex;
-     flex-direction: column;
-     justify-content: flex-start;
-     box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    box-sizing: border-box;
 }
- 
+
 #home-view {
-     align-items: center;
-     justify-content: flex-start;
-     padding-top: calc(var(--nav-offset) + clamp(24px, 10vh, 160px));
-     padding-bottom: calc(var(--section-gap) + 40px);
-     text-align: center;
+    display: grid;
+    grid-template-rows: minmax(0, 1fr) auto minmax(0, 1fr);
+    align-items: center;
+    justify-items: center;
+    height: 100dvh;
+    min-height: 100dvh;
+    overflow: hidden;
+    padding-top: calc(var(--nav-offset) + clamp(8px, 3vh, 24px));
+    padding-bottom: clamp(12px, 4vh, 28px);
+    text-align: center;
 }
- 
+
+#home-view .content {
+    grid-row: 2;
+}
+
 .content {
-     position: relative;
-     z-index: 1;
-     display: flex;
-     flex-direction: column;
-     align-items: center;
-     justify-content: center;
-     width: 100%;
-     max-width: min(var(--page-max), 100%);
-     pointer-events: none;
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: clamp(8px, 2vh, 20px);
+    width: 100%;
+    max-width: min(var(--page-max), 100%);
+    pointer-events: none;
 }
  
 .content h1 {
@@ -171,24 +236,27 @@ body::after {
 }
  
 .links-container {
-     display: flex;
-     flex-wrap: wrap;
-     gap: clamp(16px, 4vw, 48px);
-     pointer-events: auto;
-     align-items: center;
-     justify-content: center;
-     margin-top: clamp(12px, 3vh, 32px);
-     max-width: min(520px, 100%);
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-auto-flow: column;
+    gap: clamp(12px, 3vw, 32px);
+    pointer-events: auto;
+    align-items: center;
+    justify-items: center;
+    width: min(520px, 100%);
+    margin: 0 auto;
 }
  
 .social-link {
-     display: flex;
-     width: clamp(44px, 8vw, 96px);
-     height: clamp(44px, 8vw, 96px);
-     align-items: center;
-     justify-content: center;
-     transition: opacity 0.3s ease;
-     cursor: none;
+    display: flex;
+    width: clamp(52px, 9vw, 96px);
+    height: clamp(52px, 9vw, 96px);
+    min-width: 44px;
+    min-height: 44px;
+    align-items: center;
+    justify-content: center;
+    transition: opacity 0.3s ease;
+    cursor: none;
 }
  
 .social-link img {
@@ -239,30 +307,38 @@ body::after {
 }
  
 #curved-loop-container {
-     position: absolute;
-     top: 0;
-     left: 0;
-     width: 100%;
-     height: 100%;
-     pointer-events: none;
-     z-index: 0;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 0;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding-top: clamp(8px, 6vh, 72px);
 }
  
 #curved-loop-container svg {
-     pointer-events: auto;
+    pointer-events: auto;
+    transform-origin: top center;
 }
  
 #scrambled-text-container {
-    margin: clamp(16px, 4vh, 48px) auto 0;
-     max-width: min(60ch, 100%);
-     text-align: center;
-     color: #ffffff;
-     font-family: monospace;
-     font-size: clamp(0.95rem, 1.2vw, 1.2rem);
-     line-height: 1.6;
-     pointer-events: auto;
-     padding: 1rem;
-     text-shadow: 0 0 10px rgba(0, 0, 0, 0.8);
+    margin: 0 auto;
+    max-width: min(60ch, 100%);
+    text-align: center;
+    color: #ffffff;
+    font-family: monospace;
+    font-size: clamp(0.95rem, 1.2vw, 1.2rem);
+    line-height: 1.6;
+    pointer-events: auto;
+    padding: 1rem;
+    text-shadow: 0 0 10px rgba(0, 0, 0, 0.8);
+    word-break: normal;
+    overflow-wrap: normal;
+    hyphens: none;
 }
  
 #scrambled-text-container span {
@@ -272,19 +348,23 @@ body::after {
 }
  
 .view-youtube {
-     align-items: center;
-     justify-content: center;
-     overflow-x: hidden;
+    align-items: center;
+    justify-content: center;
+    height: 100dvh;
+    min-height: 100dvh;
+    overflow: hidden;
+    padding-bottom: 0;
 }
- 
+
 .youtube-view-inner {
-     position: relative;
-     width: 100%;
-     min-height: calc(100dvh - var(--nav-offset));
-     display: flex;
-     align-items: center;
-     justify-content: center;
-     padding: clamp(16px, 3vw, 32px) 0;
+    position: relative;
+    width: 100%;
+    height: 100%;
+    min-height: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: clamp(12px, 3vw, 24px) 0;
 }
  
 #card-swap-container {
@@ -326,11 +406,11 @@ body::after {
 }
  
 .curved-loop-svg {
-   user-select: none;
-   width: 100%;
-   aspect-ratio: 100 / 12;
-   overflow: visible;
-   display: block;
+  user-select: none;
+  width: 100%;
+  aspect-ratio: 100 / 12;
+  overflow: visible;
+  display: block;
   font-size: var(--loop-font-size);
    fill: #ffffff;
    -moz-user-select: none;
@@ -339,13 +419,24 @@ body::after {
    text-transform: uppercase;
    line-height: 1;
    transform: translateY(clamp(24px, 8vh, 120px));
-   text-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-   filter: drop-shadow(0 0 10px rgba(0, 0, 0, 0.5));
+  text-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+  filter: drop-shadow(0 0 10px rgba(0, 0, 0, 0.5));
+  max-width: min(1200px, 100%);
+  line-height: 1;
+  will-change: transform;
 
   --loop-spread: 3000;
   --loop-curve-height: 420;
   --loop-font-size: clamp(56px, 8vw, 140px);
   --loop-text-spacing: 2px;
+}
+
+@media (orientation: portrait), (max-width: 640px) {
+    .links-container {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        grid-auto-flow: row;
+        width: min(360px, 100%);
+    }
 }
  
 .responsive-debug {
@@ -366,6 +457,12 @@ body::after {
  
 .responsive-debug.is-visible {
     display: block;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
 }
 
 table {

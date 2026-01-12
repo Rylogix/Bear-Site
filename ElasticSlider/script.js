@@ -19,6 +19,7 @@ export class ElasticSlider {
         this.onChange = onChange;
         
         this.isDragging = false;
+        this.isLoading = false;
         
         this.init();
     }
@@ -92,7 +93,9 @@ export class ElasticSlider {
             if (!this.isDragging) {
                 gsap.to(this.wrapper, { scale: 1, duration: 0.3, ease: 'power2.out' });
                 gsap.to(this.trackWrapper, { height: 6, marginTop: 0, marginBottom: 0, duration: 0.3 });
-                gsap.to(this.valueIndicator, { opacity: 0, y: 0, duration: 0.3 }); // Hide value
+                if (!this.isLoading) {
+                    gsap.to(this.valueIndicator, { opacity: 0, y: 0, duration: 0.3 }); // Hide value
+                }
             }
         });
 
@@ -117,7 +120,9 @@ export class ElasticSlider {
             if (!this.wrapper.matches(':hover')) {
                 gsap.to(this.wrapper, { scale: 1, duration: 0.3 });
                 gsap.to(this.trackWrapper, { height: 6, marginTop: 0, marginBottom: 0, duration: 0.3 });
-                gsap.to(this.valueIndicator, { opacity: 0, y: 0, duration: 0.3 });
+                if (!this.isLoading) {
+                    gsap.to(this.valueIndicator, { opacity: 0, y: 0, duration: 0.3 });
+                }
             }
             
             // Elastic snap back of overflow (simulated by scale reset)
@@ -202,5 +207,16 @@ export class ElasticSlider {
         const percentage = ((value - this.min) / (this.max - this.min)) * 100;
         this.range.style.width = `${percentage}%`;
         this.valueIndicator.textContent = Math.round(value);
+    }
+
+    setLoading(isLoading) {
+        this.isLoading = Boolean(isLoading);
+        this.container.classList.toggle('is-loading', this.isLoading);
+
+        if (this.isLoading) {
+            gsap.set(this.valueIndicator, { opacity: 1, y: -10 });
+        } else if (!this.isDragging && !this.wrapper.matches(':hover')) {
+            gsap.to(this.valueIndicator, { opacity: 0, y: 0, duration: 0.3 });
+        }
     }
 }
