@@ -187,8 +187,8 @@ export class VanillaCardSwap {
         this.container.style.height = `${this.height}px`;
 
         if (this.responsive) {
-            this.cardDistance = Math.max(20, Math.round(this.width * 0.06));
-            this.verticalDistance = Math.max(14, Math.round(this.height * 0.04));
+            this.cardDistance = Math.max(14, Math.round(this.width * 0.045));
+            this.verticalDistance = Math.max(10, Math.round(this.height * 0.025));
         }
 
         this.refreshPositions();
