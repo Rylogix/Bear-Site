@@ -630,7 +630,10 @@
             if (item) {
                 const img = item.querySelector('img');
                 const author = item.querySelector('.masonry-author');
-                if (img) {
+                if (item.classList.contains('is-loading')) {
+                    return;
+                }
+                if (img && img.complete) {
                     openModal(img.src, author ? author.textContent : '');
                 }
             }
