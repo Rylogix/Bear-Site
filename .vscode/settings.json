@@ -1,0 +1,6 @@
+{
+    "discord.removeDetails": false,
+    "discord.removeRemoteRepository": false,
+    "discord.removeTimestamp": false,
+    "discord.swapBigAndSmallImage": true
+}

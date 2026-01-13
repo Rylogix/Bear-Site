@@ -111,6 +111,7 @@ export class VanillaCardSwap {
         this.cards.forEach((card, i) => {
             this.placeNow(card, this.makeSlot(i, this.cards.length), this.skewAmount);
         });
+        this.updateFrontCardState();
 
         this.startLoop();
         
@@ -205,6 +206,15 @@ export class VanillaCardSwap {
         if (!this.cards.length) return;
         this.cards.forEach((card, i) => {
             this.placeNow(card, this.makeSlot(i, this.cards.length), this.skewAmount);
+        });
+        this.updateFrontCardState();
+    }
+
+    updateFrontCardState() {
+        if (!this.cards.length || !this.order.length) return;
+        const frontIndex = this.order[0];
+        this.cards.forEach((card, index) => {
+            card.classList.toggle('is-front', index === frontIndex);
         });
     }
 
@@ -372,6 +382,7 @@ export class VanillaCardSwap {
         
         // UPDATE ORDER IMMEDIATELY so subsequent interactions target the correct next card
         this.order = [...restIndices, frontIndex];
+        this.updateFrontCardState();
 
         const frontCard = this.cards[frontIndex];
         
@@ -413,15 +424,9 @@ export class VanillaCardSwap {
         }
 
         // Determine labels
-        // 'promote' determines when other cards start moving forward.
-        // We want this relatively early to fill the gap.
-        const promoteTime = effectiveDur * 0.2; // Start filling gap after 20% of throw
-        tl.addLabel('promote', promoteTime);
-
-        // 'return' determines when the thrown card starts coming back.
-        // We want this near the end of the throw to avoid cutting it short.
-        const returnTime = effectiveDur * 0.9; // Start returning at 90% of throw
-        tl.addLabel('return', returnTime);
+        // Promote slightly before the drop completes, return shortly after promote.
+        tl.addLabel('promote', `-=${effectiveDur * this.config.promoteOverlap}`);
+        tl.addLabel('return', `promote+=${this.config.durMove * this.config.returnDelay}`);
 
         // Move others forward
         restIndices.forEach((idx, i) => {
@@ -486,6 +491,7 @@ export class VanillaCardSwap {
 
         // UPDATE ORDER IMMEDIATELY
         this.order = [lastIndex, ...restIndices];
+        this.updateFrontCardState();
 
         // Slot 0 (Target for last card)
         const frontSlot = this.makeSlot(0, this.cards.length);

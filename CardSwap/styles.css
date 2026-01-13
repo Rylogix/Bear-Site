@@ -35,6 +35,11 @@
   user-select: none;
   -webkit-user-select: none;
   cursor: grab;
+  pointer-events: none;
+}
+
+.card.is-front {
+  pointer-events: auto;
 }
 
 .card:active {
