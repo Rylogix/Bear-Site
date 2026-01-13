@@ -1,6 +1,6 @@
 .pill-nav-container {
   position: fixed;
-  top: calc(var(--nav-top, 12px) - 5px + env(safe-area-inset-top));
+  top: calc(var(--nav-top, 12px) - 10px + env(safe-area-inset-top));
   left: calc(var(--page-pad, 16px) + env(safe-area-inset-left));
   transform: none;
   z-index: 99;
@@ -263,7 +263,7 @@ body.is-phone .pill-nav-container {
   justify-content: center;
   width: 100%;
   padding: 0;
-  top: calc(var(--nav-top, 12px) + 5px + env(safe-area-inset-top));
+  top: calc(var(--nav-top, 12px) - 10px + env(safe-area-inset-top));
 }
 
 body.is-phone .pill-nav {
