@@ -277,7 +277,7 @@ body.is-phone .pill-nav-container {
   justify-content: flex-start;
   width: max-content;
   padding: 0;
-  top: calc(env(safe-area-inset-top) + 7px);
+  top: calc(var(--nav-top, 12px) + 5px + env(safe-area-inset-top));
 }
 
 body.is-phone .pill-nav {

@@ -3,7 +3,7 @@
      --page-pad: clamp(16px, 3vw, 64px);
      --section-gap: clamp(24px, 5vw, 72px);
      --nav-height: 56px;
-    --nav-top: clamp(8px, 1.8vw, 20px);
+    --nav-top: clamp(16px, 2.5vw, 32px);
     --nav-offset: calc(var(--nav-top) + var(--nav-height));
 }
  
