@@ -117,7 +117,6 @@ export class PillNav {
     });
 
   }
-  }
 
   handleEnter(pill) {
     if (pill.classList.contains('is-active')) return;
