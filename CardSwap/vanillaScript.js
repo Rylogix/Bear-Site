@@ -530,11 +530,24 @@ export class VanillaCardSwap {
         // Left Throw implies dragging Left.
         // So the new card should enter from the Left to fill the space.
         
-        tl.set(lastCard, { zIndex: this.cards.length + 1 }, 0);
+        tl.set(lastCard, { 
+            zIndex: this.cards.length + 1,
+            z: frontSlot.z,
+            scale: frontSlot.scale,
+            rotationY: frontSlot.rotateY
+        }, 0);
         
         // Start from Left (-500)
         tl.fromTo(lastCard, 
-            { x: -500, y: 0, rotation: -10, opacity: 0 },
+            { 
+                x: -500, 
+                y: frontSlot.y, 
+                z: frontSlot.z,
+                scale: frontSlot.scale,
+                rotationY: frontSlot.rotateY,
+                rotation: -10, 
+                opacity: 0 
+            },
             { 
                 x: frontSlot.x, 
                 y: frontSlot.y, 
