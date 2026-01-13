@@ -15,16 +15,16 @@ export class VanillaCardSwap {
         this.minWidth = options.minWidth || 240;
         this.minHeight = options.minHeight || 180;
         this.getSize = options.getSize || null;
-        this.cardDistance = options.cardDistance || 40;
-        this.verticalDistance = options.verticalDistance || 50;
         this.delay = options.delay || 4000;
         this.pauseOnHover = options.pauseOnHover !== false;
-        this.skewAmount = options.skewAmount || 4;
-        this.frontScale = options.frontScale || 1.1;
-        this.scaleStep = options.scaleStep || 0.03;
-        this.minScale = options.minScale || 0.2;
-        this.globalScale = options.globalScale || 0.75;
-        this.depthMultiplier = options.depthMultiplier || 0.6;
+        this.skewAmount = options.skewAmount || 0;
+        this.frontScale = options.frontScale || 1;
+        this.minScale = options.minScale || 0.55;
+        this.stackX = options.stackX || 84;
+        this.stackY = options.stackY || 6;
+        this.stackZ = options.stackZ || 95;
+        this.stackRotate = options.stackRotate || 4;
+        this.stackScale = options.stackScale || 0.045;
         this.quality = options.quality || 'high';
         this.easing = options.easing || (this.quality === 'low' ? 'power2.inOut' : 'elastic');
 
@@ -109,7 +109,7 @@ export class VanillaCardSwap {
 
         // Initial placement
         this.cards.forEach((card, i) => {
-            this.placeNow(card, this.makeSlot(i, this.cardDistance, this.verticalDistance, this.cards.length), this.skewAmount);
+            this.placeNow(card, this.makeSlot(i, this.cards.length), this.skewAmount);
         });
 
         this.startLoop();
@@ -186,18 +186,25 @@ export class VanillaCardSwap {
         this.container.style.width = `${this.width}px`;
         this.container.style.height = `${this.height}px`;
 
-        if (this.responsive) {
-            this.cardDistance = Math.max(14, Math.round(this.width * 0.045));
-            this.verticalDistance = Math.max(10, Math.round(this.height * 0.025));
-        }
+        this.updateStackMetrics();
 
         this.refreshPositions();
+    }
+
+    updateStackMetrics() {
+        if (!this.responsive) return;
+        const clamp = (min, value, max) => Math.max(min, Math.min(value, max));
+
+        this.stackX = clamp(70, Math.round(this.width * 0.12), 95);
+        this.stackZ = clamp(80, Math.round(this.width * 0.13), 110);
+        this.stackY = clamp(4, Math.round(this.height * 0.02), 12);
+        this.stackScale = Math.min(0.055, Math.max(0.035, this.width / 16000));
     }
 
     refreshPositions() {
         if (!this.cards.length) return;
         this.cards.forEach((card, i) => {
-            this.placeNow(card, this.makeSlot(i, this.cardDistance, this.verticalDistance, this.cards.length), this.skewAmount);
+            this.placeNow(card, this.makeSlot(i, this.cards.length), this.skewAmount);
         });
     }
 
@@ -310,15 +317,14 @@ export class VanillaCardSwap {
         }
     }
 
-    makeSlot(i, distX, distY, total) {
-        const baseScale = Math.max(this.minScale, this.frontScale - i * this.scaleStep);
-        const scale = baseScale * this.globalScale;
-        const backOffsetX = i === total - 1 ? -100 : 0;
+    makeSlot(i, total) {
+        const scale = Math.max(this.minScale, this.frontScale - i * this.stackScale);
 
         return {
-            x: i * distX + backOffsetX,
-            y: -i * distY,
-            z: -i * distX * this.depthMultiplier,
+            x: i * this.stackX,
+            y: -i * this.stackY,
+            z: -i * this.stackZ,
+            rotateY: -i * this.stackRotate,
             scale,
             zIndex: total - i
         };
@@ -330,6 +336,8 @@ export class VanillaCardSwap {
             y: slot.y,
             z: slot.z,
             scale: slot.scale,
+            rotationY: slot.rotateY,
+            rotation: 0,
             skewY: this.quality === 'low' ? 0 : skew, // Disable skew on low quality
             zIndex: slot.zIndex,
             xPercent: -50,
@@ -418,7 +426,7 @@ export class VanillaCardSwap {
         // Move others forward
         restIndices.forEach((idx, i) => {
             const card = this.cards[idx];
-            const slot = this.makeSlot(i, this.cardDistance, this.verticalDistance, this.cards.length);
+            const slot = this.makeSlot(i, this.cards.length);
             
             // Ensure we animate from current state to new state
             tl.set(card, { zIndex: slot.zIndex }, 'promote');
@@ -427,6 +435,7 @@ export class VanillaCardSwap {
                 y: slot.y,
                 z: slot.z,
                 scale: slot.scale,
+                rotationY: slot.rotateY,
                 rotation: 0, // Reset rotation if any
                 opacity: 1,
                 duration: this.config.durMove,
@@ -435,7 +444,7 @@ export class VanillaCardSwap {
         });
 
         // Return front card to back
-        const backSlot = this.makeSlot(this.cards.length - 1, this.cardDistance, this.verticalDistance, this.cards.length);
+        const backSlot = this.makeSlot(this.cards.length - 1, this.cards.length);
         
         tl.call(() => {
             // Set zIndex to back, but keep position/opacity from throw
@@ -449,6 +458,7 @@ export class VanillaCardSwap {
             y: backSlot.y,
             z: backSlot.z,
             scale: backSlot.scale,
+            rotationY: backSlot.rotateY,
             rotation: 0,
             opacity: 1, // Fade back in
             duration: this.config.durReturn,
@@ -478,7 +488,7 @@ export class VanillaCardSwap {
         this.order = [lastIndex, ...restIndices];
 
         // Slot 0 (Target for last card)
-        const frontSlot = this.makeSlot(0, this.cardDistance, this.verticalDistance, this.cards.length);
+        const frontSlot = this.makeSlot(0, this.cards.length);
         
         const tl = gsap.timeline({
             onComplete: () => {
@@ -494,7 +504,7 @@ export class VanillaCardSwap {
         restIndices.forEach((idx, i) => {
             const card = this.cards[idx];
             // New slot is i + 1
-            const slot = this.makeSlot(i + 1, this.cardDistance, this.verticalDistance, this.cards.length);
+            const slot = this.makeSlot(i + 1, this.cards.length);
             
             tl.to(card, {
                 x: slot.x,
@@ -502,6 +512,7 @@ export class VanillaCardSwap {
                 z: slot.z,
                 zIndex: slot.zIndex, 
                 scale: slot.scale,
+                rotationY: slot.rotateY,
                 rotation: 0, // Reset rotation
                 duration: this.config.durMove,
                 ease: this.config.ease
@@ -523,6 +534,7 @@ export class VanillaCardSwap {
                 y: frontSlot.y, 
                 z: frontSlot.z, 
                 scale: frontSlot.scale,
+                rotationY: frontSlot.rotateY,
                 rotation: 0,
                 opacity: 1,
                 duration: this.config.durReturn,
@@ -534,7 +546,7 @@ export class VanillaCardSwap {
         tl.call(() => {
             // Force Z-indices update for safety
             this.order.forEach((idx, i) => {
-                const s = this.makeSlot(i, this.cardDistance, this.verticalDistance, this.cards.length);
+                const s = this.makeSlot(i, this.cards.length);
                 this.cards[idx].style.zIndex = s.zIndex;
             });
         });

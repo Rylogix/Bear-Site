@@ -4,7 +4,13 @@
   /* transform: translate(5%, 20%); */
   /* transform-origin: bottom right; */
 
-  perspective: 1000px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  perspective: 1500px;
+  perspective-origin: 50% 50%;
+  transform-style: preserve-3d;
+  will-change: transform;
   overflow: visible;
   max-width: 100%;
   max-height: 100%;
@@ -19,6 +25,7 @@
   background: #000000;
 
   transform-style: preserve-3d;
+  transform-origin: center center;
   will-change: transform;
   backface-visibility: hidden;
   -webkit-backface-visibility: hidden;
