@@ -313,9 +313,10 @@ export class VanillaCardSwap {
     makeSlot(i, distX, distY, total) {
         const baseScale = Math.max(this.minScale, this.frontScale - i * this.scaleStep);
         const scale = baseScale * this.globalScale;
+        const backOffsetX = i === total - 1 ? -100 : 0;
 
         return {
-            x: i * distX,
+            x: i * distX + backOffsetX,
             y: -i * distY,
             z: -i * distX * this.depthMultiplier,
             scale,
