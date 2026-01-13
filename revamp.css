@@ -366,7 +366,7 @@ body::after {
     align-items: center;
     justify-content: center;
     padding: clamp(12px, 3vw, 24px) 0;
-    transform: translateY(0);
+    transform: translateY(-100px);
 }
  
 #card-swap-container {
