@@ -25,16 +25,6 @@ export class PillNav {
     this.navElement = document.createElement('nav');
     this.navElement.className = 'pill-nav';
     
-    // Logo (Static for now, can be parameterized)
-    const logoLink = document.createElement('a');
-    logoLink.className = 'pill-logo';
-    logoLink.href = '#';
-    const logoImg = document.createElement('img');
-    logoImg.src = '../static/bear.png'; // Assuming a default logo
-    logoImg.alt = 'Logo';
-    logoLink.appendChild(logoImg);
-    this.navElement.appendChild(logoLink);
-    
     // Items container
     const itemsContainer = document.createElement('div');
     itemsContainer.className = 'pill-nav-items desktop-only';
