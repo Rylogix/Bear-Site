@@ -1,7 +1,7 @@
 .pill-nav-container {
   position: fixed;
-  top: calc(var(--nav-top, 12px) + 5px + env(safe-area-inset-top));
-  left: 50%;
+  top: calc(var(--nav-top, 12px) - 5px + env(safe-area-inset-top));
+  left: calc(50% - 100px);
   transform: translateX(-50%);
   z-index: 99;
   display: flex;
